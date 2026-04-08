@@ -1,8 +1,14 @@
 {
   "manifest_version": 3,
   "name": "메디앤메디 퍼블리셔 어드민",
-  "version": "1.4",
-  "permissions": ["activeTab", "downloads", "notifications", "storage", "sidePanel"],
+  "version": "1.5",
+  "permissions": [
+    "activeTab",
+    "downloads",
+    "notifications",
+    "storage",
+    "sidePanel"
+  ],
   "action": {
     "default_title": "메디앤메디 어드민"
   },
@@ -15,6 +21,7 @@
   "host_permissions": [
     "https://api.notion.com/*",
     "https://openapi.naver.com/*",
-    "*://*/*"
+    "*://*/*",
+    "https://webteamproject-e2290-default-rtdb.firebaseio.com/*"
   ]
 }
