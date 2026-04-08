@@ -1,4 +1,34 @@
 // ══════════════════════════════════════════════
+//  Firebase 설정 (오늘 업무 실시간 공유)
+// ══════════════════════════════════════════════
+const FIREBASE_URL = "https://webteamproject-e2290-default-rtdb.firebaseio.com";
+const FIREBASE_KEY = "todayTasks"; // DB 경로
+
+// Firebase REST API 래퍼
+const firebaseDB = {
+  async get() {
+    const today = todayStr();
+    const res = await fetch(`${FIREBASE_URL}/tasks/${today}.json`);
+    return res.ok ? await res.json() : null;
+  },
+  async set(data) {
+    const today = todayStr();
+    await fetch(`${FIREBASE_URL}/tasks/${today}.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+  },
+  // 어제 데이터 삭제 (자동 초기화)
+  async cleanup() {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const key = yesterday.toISOString().slice(0,10);
+    await fetch(`${FIREBASE_URL}/tasks/${key}.json`, { method: "DELETE" });
+  }
+};
+
+// ══════════════════════════════════════════════
 //  설정
 // ══════════════════════════════════════════════
 const NOTION_API_KEY = "YOUR_NOTION_API_KEY";
@@ -598,52 +628,24 @@ function todayStr() {
   return new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
 }
 
-// storage 래퍼 (chrome.storage.sync 없으면 localStorage fallback)
-const taskStorage = {
-  get(keys) {
-    return new Promise(resolve => {
-      if (typeof chrome !== "undefined" && chrome.storage) {
-        chrome.storage.sync.get(keys, resolve);
-      } else {
-        const result = {};
-        keys.forEach(k => { const v = localStorage.getItem(k); result[k] = v ? JSON.parse(v) : undefined; });
-        resolve(result);
-      }
-    });
-  },
-  set(items) {
-    return new Promise(resolve => {
-      if (typeof chrome !== "undefined" && chrome.storage) {
-        chrome.storage.sync.set(items, resolve);
-      } else {
-        Object.entries(items).forEach(([k, v]) => localStorage.setItem(k, JSON.stringify(v)));
-        resolve();
-      }
-    });
-  }
-};
+// taskStorage → firebaseDB로 대체됨
 
 let todayTasks = [];   // [{ id, text, done, doneAt, doneBy }]
 
 async function loadTasks() {
-  const data = await taskStorage.get([TASK_KEY, TASK_DATE_KEY]);
-  const savedDate = data[TASK_DATE_KEY] || "";
-  const today     = todayStr();
-
-  if (savedDate !== today) {
-    // 날짜가 다르면 초기화
+  try {
+    const data = await firebaseDB.get();
+    todayTasks = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
+  } catch(e) {
     todayTasks = [];
-    await taskStorage.set({ [TASK_KEY]: [], [TASK_DATE_KEY]: today });
-  } else {
-    todayTasks = data[TASK_KEY] || [];
   }
-
   renderTasks();
   scheduleDailyReset();
+  await firebaseDB.cleanup(); // 어제 데이터 삭제
 }
 
 async function saveTasks() {
-  await taskStorage.set({ [TASK_KEY]: todayTasks, [TASK_DATE_KEY]: todayStr() });
+  await firebaseDB.set(todayTasks);
 }
 
 // 09:00 초기화 스케줄러
@@ -802,22 +804,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// 폴링: 다른 기기에서 완료된 항목 감지 (5초마다)
+// 폴링: Firebase에서 5초마다 동기화 (팀원 실시간 공유)
 setInterval(async () => {
-  const data = await taskStorage.get([TASK_KEY, TASK_DATE_KEY]);
-  if (data[TASK_DATE_KEY] !== todayStr()) return;
-  const remoteTasks = data[TASK_KEY] || [];
+  try {
+    const data = await firebaseDB.get();
+    const remoteTasks = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
 
-  // 새로 완료된 항목 감지 → 플로팅 알림
-  remoteTasks.forEach(rt => {
-    const local = todayTasks.find(lt => lt.id === rt.id);
-    if (rt.done && local && !local.done) {
-      showCompleteFloat(`✅ "${rt.text}" 완료!`);
-    }
-  });
+    // 새로 완료된 항목 감지 → 플로팅 알림
+    remoteTasks.forEach(rt => {
+      const local = todayTasks.find(lt => lt.id === rt.id);
+      if (rt.done && local && !local.done) {
+        showCompleteFloat(`✅ "${rt.text}" 완료!`);
+        triggerNotification(rt.text);
+      }
+    });
 
-  todayTasks = remoteTasks;
-  renderTasks();
+    todayTasks = remoteTasks;
+    renderTasks();
+  } catch(e) { /* 네트워크 오류 무시 */ }
 }, 5000);
 
 // 초기 로드
