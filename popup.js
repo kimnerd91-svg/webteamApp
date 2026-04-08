@@ -31,10 +31,10 @@ const firebaseDB = {
 // ══════════════════════════════════════════════
 //  설정
 // ══════════════════════════════════════════════
-const NOTION_API_KEY = "YOUR_NOTION_API_KEY";
-const DATABASE_ID    = "32f20d52272f80a1abaac09dd0647728";
+const NOTION_API_KEY = "ntn_b88134223832eq3Jm6Km8T34CuX3gbL8YC56AgKJmyt1cy";
+const DATABASE_ID    = "2fb20d52272f80e080ade83840e29ee9";
 const NOTION_VERSION = "2022-06-28";
-const USE_DUMMY      = true;
+const USE_DUMMY      = false;
 
 // ══════════════════════════════════════════════
 //  더미 데이터 (노션 DB 동일 구조 + 신규 필드)
@@ -161,7 +161,7 @@ function parseNotionPage(page) {
     design:      p["디자인"]?.people?.[0]?.name ?? p["디자인"]?.select?.name ?? "",
     coding:      p["코딩"]?.people?.[0]?.name ?? p["코딩"]?.select?.name ?? "",
     photo:       p["촬영"]?.select?.name ?? p["촬영"]?.multi_select?.[0]?.name ?? "",
-    photoCo:     p["촬영업체"]?.people?.[0]?.name ?? p["촬영업체"]?.select?.name ?? "",
+    photoCo:     p["촬영업체"]?.multi_select?.[0]?.name ?? p["촬영업체"]?.people?.[0]?.name ?? p["촬영업체"]?.select?.name ?? "",
     photoDate:   p["촬영날짜"]?.date?.start ?? "",
     url:         p["웹사이트 URL"]?.url ?? p["웹사이트 URL"]?.rich_text?.[0]?.plain_text ?? "",
     sslStart:    p["보안인증서 만료일자"]?.date?.start ?? "",
@@ -170,6 +170,57 @@ function parseNotionPage(page) {
     ftp:         p["FTP 정보"]?.rich_text?.[0]?.plain_text ?? "",
     domain:      p["도메인 정보"]?.rich_text?.[0]?.plain_text ?? "",
   };
+}
+
+
+// ══════════════════════════════════════════════
+//  노션 저장 / 수정
+// ══════════════════════════════════════════════
+async function saveToNotion(data, pageId = null) {
+  if (USE_DUMMY) return true;
+
+  const props = {
+    "병원명":           { title: [{ text: { content: data.name } }] },
+    "상태":             data.status      ? { select: { name: data.status } }                        : undefined,
+    "시작일":           data.start       ? { date: { start: data.start } }                          : undefined,
+    "1차 마감일":       data.deadline    ? { date: { start: data.deadline } }                       : undefined,
+    "완료일":           data.done        ? { date: { start: data.done } }                           : undefined,
+    "개원날짜":         data.open        ? { date: { start: data.open } }                           : undefined,
+    "디자인":           data.design      ? { select: { name: data.design } }                        : undefined,
+    "코딩":             data.coding      ? { select: { name: data.coding } }                        : undefined,
+    "촬영":             data.photo       ? { select: { name: data.photo } }                         : undefined,
+    "촬영업체":         data.photoCo     ? { multi_select: [{ name: data.photoCo }] }               : undefined,
+    "촬영날짜":         data.photoDate   ? { date: { start: data.photoDate } }                      : undefined,
+    "웹사이트 URL":     data.url         ? { url: data.url }                                        : undefined,
+    "보안인증서 만료일자": data.sslStart  ? { date: { start: data.sslStart } }                      : undefined,
+    "호스팅 만료일자":  data.hostingStart? { date: { start: data.hostingStart } }                   : undefined,
+    "호스팅 정보":      data.hostingInfo ? { rich_text: [{ text: { content: data.hostingInfo } }] } : undefined,
+    "FTP 정보":         data.ftp         ? { rich_text: [{ text: { content: data.ftp } }] }         : undefined,
+    "도메인 정보":      data.domain      ? { rich_text: [{ text: { content: data.domain } }] }      : undefined,
+  };
+
+  // undefined 제거
+  Object.keys(props).forEach(k => { if (!props[k]) delete props[k]; });
+
+  // 수정 (PATCH) vs 신규 (POST)
+  const url    = pageId
+    ? `https://api.notion.com/v1/pages/${pageId}`
+    : "https://api.notion.com/v1/pages";
+  const method = pageId ? "PATCH" : "POST";
+  const body   = pageId
+    ? { properties: props }
+    : { parent: { database_id: DATABASE_ID }, properties: props };
+
+  const res = await fetch(url, {
+    method,
+    headers: {
+      "Authorization":  `Bearer ${NOTION_API_KEY}`,
+      "Notion-Version": NOTION_VERSION,
+      "Content-Type":   "application/json"
+    },
+    body: JSON.stringify(body)
+  });
+  return res.ok;
 }
 
 // ══════════════════════════════════════════════
@@ -243,13 +294,13 @@ function renderDashboard(data) {
   board.innerHTML = showStatuses
     .filter(s => groups[s].length > 0)
     .map(s => `
-      <div class="kanban-col">
-        <div class="kanban-col-title">
+      <div class="kanban-col" data-status="${s}">
+        <div class="kanban-col-title" data-status="${s}">
           <span class="dot" style="background:${STATUS_COLORS[s]||"#555"}"></span>
           ${s} <span style="color:var(--text3);font-weight:400;margin-left:2px">${groups[s].length}</span>
         </div>
         ${groups[s].map(d => `
-          <div class="kanban-item" data-id="${d.id}">
+          <div class="kanban-item" data-id="${d.id}" draggable="true">
             <div class="k-name">${d.name}</div>
             <div class="k-meta">${d.deadline ? "마감 " + d.deadline : d.coding || (d.design || "")}</div>
           </div>
@@ -257,11 +308,52 @@ function renderDashboard(data) {
       </div>
     `).join("");
 
-  // 칸반 카드 클릭 → 상세
+  // 칸반 카드 클릭 → 상세 / 드래그앤드롭
   board.querySelectorAll(".kanban-item").forEach(el => {
+    el.setAttribute("draggable", "true");
     el.addEventListener("click", () => {
       const item = allData.find(d => d.id === el.dataset.id);
       if (item) openDetail(item);
+    });
+    el.addEventListener("dragstart", e => {
+      e.dataTransfer.setData("itemId", el.dataset.id);
+      el.style.opacity = "0.4";
+    });
+    el.addEventListener("dragend", e => {
+      el.style.opacity = "1";
+    });
+  });
+
+  board.querySelectorAll(".kanban-col").forEach(col => {
+    col.addEventListener("dragover", e => {
+      e.preventDefault();
+      col.style.background = "rgba(79,94,247,.08)";
+      col.style.borderColor = "var(--accent)";
+    });
+    col.addEventListener("dragleave", () => {
+      col.style.background = "";
+      col.style.borderColor = "";
+    });
+    col.addEventListener("drop", async e => {
+      e.preventDefault();
+      col.style.background = "";
+      col.style.borderColor = "";
+      const itemId  = e.dataTransfer.getData("itemId");
+      const newStatus = col.dataset.status;
+      if (!itemId || !newStatus) return;
+
+      const item = allData.find(d => d.id === itemId);
+      if (!item || item.status === newStatus) return;
+
+      item.status = newStatus;
+
+      if (!USE_DUMMY) {
+        await saveToNotion(item, item.id);
+      }
+
+      renderDashboard(allData);
+      renderCards(allData);
+      showToast(`"${item.name}" → ${newStatus}`, "✅");
     });
   });
 }
@@ -332,7 +424,14 @@ function renderDetail(d, editMode) {
     </div>
     <div class="detail-title">
       <h2 title="${d.name}">${d.name}</h2>
-      <span class="${statusClass(d.status)}">${d.status || "미분류"}</span>
+      ${editMode
+        ? `<select class="edit-select" data-key="status" style="font-size:11px;padding:3px 6px;border-radius:6px">
+            ${["기획중","디자인중","코딩중","대기중","부류","유지보수","전체피드백","완료","종료"].map(s=>
+              `<option value="${s}" ${s===d.status?"selected":""}>${s}</option>`
+            ).join("")}
+           </select>`
+        : `<span class="${statusClass(d.status)}">${d.status || "미분류"}</span>`
+      }
     </div>
     <div class="detail-actions">
       ${editMode
@@ -406,6 +505,21 @@ function renderDetail(d, editMode) {
   }
 
   document.getElementById("detailBody").innerHTML = `
+    <!-- 상태 -->
+    <div class="detail-section">
+      <div class="detail-section-title">🏷️ 상태</div>
+      <div class="detail-fields">
+        ${editMode
+          ? field("상태", "status", "text", STATUSES, true)
+          : `<div class="detail-field full">
+               <div class="detail-field-label">상태</div>
+               <div class="detail-field-value">
+                 <span class="${statusClass(d.status)}">${d.status || "미분류"}</span>
+               </div>
+             </div>`
+        }
+      </div>
+    </div>
     <!-- 일정 -->
     <div class="detail-section">
       <div class="detail-section-title">📅 일정</div>
@@ -466,23 +580,43 @@ function renderDetail(d, editMode) {
       isEditMode = true;
       renderDetail(d, true);
     });
-    document.getElementById("detailDeleteBtn").addEventListener("click", () => {
-      if (confirm(`"${d.name}"을 삭제할까요?`)) {
-        allData = allData.filter(x => x.id !== d.id);
-        renderDashboard(allData);
-        renderCards(allData);
-        renderAlerts(allData);
-        showToast(`"${d.name}" 삭제됨`, "🗑️");
-        switchTab(prevTab);
+    document.getElementById("detailDeleteBtn").addEventListener("click", async () => {
+      if (!confirm(`"${d.name}"을 정말 삭제할까요?\n\n이 작업은 노션 DB에서도 삭제됩니다.`)) return;
+
+      // 노션에서 삭제 (archived 처리)
+      if (!USE_DUMMY) {
+        const res = await fetch(`https://api.notion.com/v1/pages/${d.id}`, {
+          method: "PATCH",
+          headers: {
+            "Authorization": `Bearer ${NOTION_API_KEY}`,
+            "Notion-Version": NOTION_VERSION,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ archived: true })
+        });
+        if (!res.ok) { showToast("노션 삭제 실패", "❌"); return; }
       }
+
+      allData = allData.filter(x => x.id !== d.id);
+      renderDashboard(allData);
+      renderCards(allData);
+      renderAlerts(allData);
+      renderCalendar();
+      showToast(`"${d.name}" 삭제됨`, "🗑️");
+      switchTab(prevTab);
     });
   }
 }
 
-function saveDetail(original) {
-  const inputs = document.querySelectorAll("#detailBody .edit-input, #detailBody .edit-select");
+async function saveDetail(original) {
+  const inputs = document.querySelectorAll("#detailBody .edit-input, #detailBody .edit-select, #detailHeader .edit-select");
   const updated = { ...original };
   inputs.forEach(el => { updated[el.dataset.key] = el.value; });
+
+  if (!USE_DUMMY) {
+    const ok = await saveToNotion(updated, original.id);
+    if (!ok) { showToast("노션 저장 실패", "❌"); return; }
+  }
 
   const idx = allData.findIndex(x => x.id === original.id);
   if (idx !== -1) allData[idx] = updated;
@@ -490,6 +624,7 @@ function saveDetail(original) {
   renderDashboard(allData);
   renderCards(allData);
   renderAlerts(allData);
+  renderCalendar();
   isEditMode = false;
   renderDetail(updated, false);
   showToast("수정 완료!", "✅");
@@ -597,10 +732,16 @@ document.getElementById("f-save").addEventListener("click", async () => {
     domain:      document.getElementById("f-domain").value,
   };
 
+  if (!USE_DUMMY) {
+    const ok = await saveToNotion(newEntry);
+    if (!ok) { showToast("노션 저장 실패", "❌"); return; }
+  }
+
   allData.unshift(newEntry);
   renderDashboard(allData);
   renderCards(allData);
   renderAlerts(allData);
+  renderCalendar();
   showToast(`"${name}" 등록 완료!`);
   document.getElementById("f-reset").click();
   switchTab("list");
@@ -658,7 +799,7 @@ function scheduleDailyReset() {
   const msUntil = reset - now;
   setTimeout(async () => {
     todayTasks = [];
-    await taskStorage.set({ [TASK_KEY]: [], [TASK_DATE_KEY]: todayStr() });
+    await firebaseDB.set([]);
     renderTasks();
     showCompleteFloat("📋 오늘 업무 리스트가 초기화되었습니다", "#5a6080");
     scheduleDailyReset(); // 다음 날 재등록

@@ -968,3 +968,8 @@ body {
   font-size: 14px;
   flex-shrink: 0;
 }
+
+/* 칸반 드래그앤드롭 */
+.kanban-item[draggable="true"] { cursor: grab; }
+.kanban-item[draggable="true"]:active { cursor: grabbing; }
+.kanban-col { transition: background .15s, border-color .15s; }
