@@ -13,6 +13,7 @@
     <button class="nav-btn active" data-tab="dashboard" title="대시보드">📊</button>
     <button class="nav-btn" data-tab="list" title="사이트 목록">📋</button>
     <button class="nav-btn" data-tab="register" title="신규 등록">➕</button>
+    <button class="nav-btn" data-tab="calendar" title="캘린더">📅</button>
     <button class="nav-btn" data-tab="alerts" title="만료 알림" id="alertNavBtn">🔔</button>
   </nav>
 
@@ -198,7 +199,29 @@
         </div>
       </div>
 
-      <!-- ⑤ 만료 알림 -->
+
+      <!-- ⑤ 캘린더 -->
+      <div class="tab-panel" id="tab-calendar">
+        <div class="cal-toolbar">
+          <button class="cal-nav-btn" id="calPrev">‹</button>
+          <span class="cal-month-label" id="calMonthLabel"></span>
+          <button class="cal-nav-btn" id="calNext">›</button>
+        </div>
+        <!-- 범례 -->
+        <div class="cal-legend">
+          <span class="cal-legend-item"><span class="cal-dot" style="background:#3b82f6"></span>시작일</span>
+          <span class="cal-legend-item"><span class="cal-dot" style="background:#f59e0b"></span>1차마감</span>
+          <span class="cal-legend-item"><span class="cal-dot" style="background:#10b981"></span>완료일</span>
+          <span class="cal-legend-item"><span class="cal-dot" style="background:#8b5cf6"></span>개원</span>
+          <span class="cal-legend-item"><span class="cal-dot" style="background:#ec4899"></span>촬영</span>
+        </div>
+        <div class="cal-grid-header">
+          <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+
+      <!-- ⑥ 만료 알림 -->
       <div class="tab-panel" id="tab-alerts">
         <p class="section-title" style="margin-bottom:12px;">🚨 만료 임박 항목</p>
         <div class="alert-list" id="alertList"></div>

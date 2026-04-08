@@ -175,7 +175,7 @@ function parseNotionPage(page) {
 // ══════════════════════════════════════════════
 //  탭 전환
 // ══════════════════════════════════════════════
-const tabTitles = { dashboard:"대시보드", list:"사이트 목록", register:"신규 등록", alerts:"만료 알림", detail:"상세 정보" };
+const tabTitles = { dashboard:"대시보드", list:"사이트 목록", register:"신규 등록", alerts:"만료 알림", detail:"상세 정보", calendar:"캘린더" };
 let prevTab = "dashboard";
 
 function switchTab(tab, updateNav = true) {
@@ -614,6 +614,7 @@ document.getElementById("f-save").addEventListener("click", async () => {
   renderDashboard(allData);
   renderCards(allData);
   renderAlerts(allData);
+  renderCalendar();
 })();
 
 // ══════════════════════════════════════════════
@@ -1108,3 +1109,148 @@ document.getElementById("seoModalClose").addEventListener("click", () => {
 document.getElementById("seoModal").addEventListener("click", e => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove("open");
 });
+
+// ══════════════════════════════════════════════
+//  캘린더
+// ══════════════════════════════════════════════
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-indexed
+
+const EVENT_TYPES = [
+  { key:"start",    label:"시작",  cls:"start"    },
+  { key:"deadline", label:"마감",  cls:"deadline" },
+  { key:"done",     label:"완료",  cls:"done"     },
+  { key:"open",     label:"개원",  cls:"open"     },
+  { key:"photoDate",label:"촬영",  cls:"photo"    },
+];
+
+function buildEventMap(data) {
+  const map = {}; // "YYYY-MM-DD" → [{name, type, cls, id}]
+  data.forEach(d => {
+    EVENT_TYPES.forEach(et => {
+      const dateVal = d[et.key];
+      if (!dateVal || dateVal.length < 8) return;
+      const key = dateVal.slice(0, 10);
+      if (!map[key]) map[key] = [];
+      map[key].push({ name: d.name, label: et.label, cls: et.cls, id: d.id });
+    });
+  });
+  return map;
+}
+
+function renderCalendar() {
+  const label = document.getElementById("calMonthLabel");
+  const grid  = document.getElementById("calGrid");
+  if (!label || !grid) return;
+
+  label.textContent = `${calYear}년 ${calMonth + 1}월`;
+
+  const eventMap  = buildEventMap(allData);
+  const firstDay  = new Date(calYear, calMonth, 1).getDay(); // 0=일
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const today     = new Date().toISOString().slice(0, 10);
+
+  let cells = "";
+
+  // 빈 칸
+  for (let i = 0; i < firstDay; i++) {
+    cells += `<div class="cal-cell empty"></div>`;
+  }
+
+  // 날짜 칸
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateKey = `${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const isToday = dateKey === today;
+    const events  = eventMap[dateKey] || [];
+
+    const evHtml = events.slice(0, 3).map(ev => `
+      <div class="cal-event ${ev.cls}" data-id="${ev.id}" title="${ev.name} (${ev.label})">
+        ${ev.label} ${ev.name.length > 6 ? ev.name.slice(0,6)+"…" : ev.name}
+      </div>
+    `).join("");
+
+    const moreLabel = events.length > 3
+      ? `+${events.length - 3}개 더보기`
+      : events.length > 0 ? "전체보기" : "";
+
+    const moreHtml = events.length > 0
+      ? `<div class="cal-more" data-date="${dateKey}" style="cursor:pointer">${moreLabel}</div>`
+      : "";
+
+    cells += `
+      <div class="cal-cell${isToday ? " today" : ""}">
+        <div class="cal-day-num">${d}</div>
+        ${evHtml}
+        ${moreHtml}
+      </div>`;
+  }
+
+  grid.innerHTML = cells;
+
+  // 이벤트 클릭 → 상세 패널
+  grid.querySelectorAll(".cal-event[data-id]").forEach(el => {
+    el.addEventListener("click", () => {
+      const item = allData.find(d => d.id === el.dataset.id);
+      if (item) openDetail(item);
+    });
+  });
+
+  // +N개 클릭 → 날짜 모달
+  grid.querySelectorAll(".cal-more[data-date]").forEach(el => {
+    el.addEventListener("click", () => openDayModal(el.dataset.date, eventMap));
+  });
+}
+
+// 이전/다음 달
+document.getElementById("calPrev").addEventListener("click", () => {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+});
+document.getElementById("calNext").addEventListener("click", () => {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+});
+
+// 탭 전환 시 캘린더 렌더
+const _origSwitchTab = switchTab;
+// switchTab이 이미 정의되어 있으므로 calendar 탭 전환 시 renderCalendar 호출
+document.querySelector('[data-tab="calendar"]').addEventListener("click", () => {
+  renderCalendar();
+});
+
+// ── 날짜 모달
+function openDayModal(dateKey, eventMap) {
+  const events = eventMap[dateKey] || [];
+  const [y, m, d] = dateKey.split("-");
+  const title = `${parseInt(m)}월 ${parseInt(d)}일 일정`;
+
+  const body = document.getElementById("seoModalBody");
+  const overlay = document.getElementById("seoModal");
+  const titleEl = document.getElementById("seoModalTitle");
+
+  titleEl.textContent = `📅 ${title}`;
+  body.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${events.map(ev => `
+        <div class="day-modal-item" data-id="${ev.id}">
+          <span class="cal-event ${ev.cls}" style="font-size:10px;padding:2px 7px;flex-shrink:0">${ev.label}</span>
+          <span class="day-modal-name">${ev.name}</span>
+          <span class="day-modal-arrow">›</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  overlay.classList.add("open");
+
+  // 클릭 → 상세 패널
+  body.querySelectorAll(".day-modal-item[data-id]").forEach(el => {
+    el.addEventListener("click", () => {
+      overlay.classList.remove("open");
+      const item = allData.find(d => d.id === el.dataset.id);
+      if (item) openDetail(item);
+    });
+  });
+}
