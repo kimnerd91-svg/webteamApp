@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "메디앤메디 퍼블리셔 어드민",
+  "version": "1.4",
+  "permissions": ["activeTab", "downloads", "notifications", "storage", "sidePanel"],
+  "action": {
+    "default_title": "메디앤메디 어드민"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "https://api.notion.com/*",
+    "https://openapi.naver.com/*",
+    "*://*/*"
+  ]
+}

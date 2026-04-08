@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- 사이드바 -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">🏥</div>
+    <button class="nav-btn active" data-tab="dashboard" title="대시보드">📊</button>
+    <button class="nav-btn" data-tab="list" title="사이트 목록">📋</button>
+    <button class="nav-btn" data-tab="register" title="신규 등록">➕</button>
+    <button class="nav-btn" data-tab="alerts" title="만료 알림" id="alertNavBtn">🔔</button>
+  </nav>
+
+  <div class="main">
+    <!-- 상단바 -->
+    <div class="topbar">
+      <button class="back-btn" id="backBtn" style="display:none">← 뒤로</button>
+      <h1 id="topTitle">대시보드</h1>
+      <span class="sep" id="topSep">·</span>
+      <span class="subtitle" id="topSub">메디앤메디 마케팅</span>
+    </div>
+
+    <div class="content">
+
+      <!-- ① 대시보드 -->
+      <div class="tab-panel active" id="tab-dashboard">
+        <div class="stat-row">
+          <div class="stat-card">
+            <div class="num" id="stat-total">0</div>
+            <div class="lbl">전체</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="num" id="stat-active">0</div>
+            <div class="lbl">진행중</div>
+          </div>
+          <div class="stat-card yellow">
+            <div class="num" id="stat-waiting">0</div>
+            <div class="lbl">대기중</div>
+          </div>
+          <div class="stat-card red">
+            <div class="num" id="stat-expiry">0</div>
+            <div class="lbl">만료임박</div>
+          </div>
+        </div>
+        <!-- 오늘 업무 -->
+        <div class="today-task-section">
+          <div class="today-task-header">
+            <p class="section-title" style="margin:0">📋 오늘 업무</p>
+            <span class="today-date" id="todayDate"></span>
+            <button class="btn-add-task" id="btnOpenTaskAdd" title="업무 추가">＋</button>
+          </div>
+          <div class="task-input-wrap" id="taskInputWrap" style="display:none">
+            <input class="task-input" id="taskInput" type="text" placeholder="업무 내용을 입력하세요..." maxlength="80">
+            <button class="btn-task-submit" id="btnAddTask">추가</button>
+          </div>
+          <div class="task-list" id="taskList"></div>
+        </div>
+
+        <p class="section-title">상태별 현황</p>
+        <div class="kanban" id="kanban-board"></div>
+      </div>
+
+      <!-- ② 목록 (카드 뷰) -->
+      <div class="tab-panel" id="tab-list">
+        <div class="toolbar">
+          <input class="search-input" id="searchInput" type="text" placeholder="🔍  사이트명 / URL 검색...">
+          <select class="filter-select" id="statusFilter">
+            <option value="">전체</option>
+            <option value="기획중">기획중</option>
+            <option value="디자인중">디자인중</option>
+            <option value="코딩중">코딩중</option>
+            <option value="대기중">대기중</option>
+            <option value="부류">부류</option>
+            <option value="유지보수">유지보수</option>
+            <option value="전체피드백">전체피드백</option>
+            <option value="완료">완료</option>
+            <option value="종료">종료</option>
+          </select>
+        </div>
+        <div class="card-grid" id="cardGrid"></div>
+      </div>
+
+      <!-- ③ 상세/수정 패널 (카드 클릭 시) -->
+      <div class="tab-panel" id="tab-detail">
+        <div class="detail-header" id="detailHeader"></div>
+        <div class="detail-body" id="detailBody"></div>
+      </div>
+
+      <!-- ④ 신규 등록 -->
+      <div class="tab-panel" id="tab-register">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label">사이트명 (방원명) *</label>
+            <input class="form-input" id="f-name" type="text" placeholder="예: 다인아트치과 리뉴얼">
+          </div>
+          <div class="form-group">
+            <label class="form-label">상태</label>
+            <select class="form-select" id="f-status">
+              <option value="기획중">기획중</option>
+              <option value="디자인중">디자인중</option>
+              <option value="코딩중">코딩중</option>
+              <option value="대기중">대기중</option>
+              <option value="부류">부류</option>
+              <option value="유지보수">유지보수</option>
+              <option value="전체피드백">전체피드백</option>
+              <option value="완료">완료</option>
+              <option value="종료">종료</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">시작일</label>
+            <input class="form-input" id="f-start" type="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">1차 마감일</label>
+            <input class="form-input" id="f-deadline" type="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">완료일</label>
+            <input class="form-input" id="f-done" type="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">개원날짜</label>
+            <input class="form-input" id="f-open" type="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">디자인 담당</label>
+            <select class="form-select" id="f-design">
+              <option value="">선택</option>
+              <option value="진의영">진의영</option>
+              <option value="외주">외주</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">코딩 담당</label>
+            <select class="form-select" id="f-coding">
+              <option value="">선택</option>
+              <option value="김동훈">김동훈</option>
+              <option value="외주">외주</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">촬영</label>
+            <select class="form-select" id="f-photo">
+              <option value="">없음</option>
+              <option value="사진">사진</option>
+              <option value="사진+영상">사진+영상</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">촬영업체</label>
+            <select class="form-select" id="f-photo-co">
+              <option value="">선택</option>
+              <option value="박중원">박중원</option>
+              <option value="장영진">장영진</option>
+              <option value="박상준">박상준</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">촬영날짜</label>
+            <input class="form-input" id="f-photo-date" type="date">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">웹사이트 URL</label>
+            <input class="form-input" id="f-url" type="text" placeholder="예: jinsimdental22.mycafe24.com/">
+          </div>
+          <div class="form-group">
+            <label class="form-label">SSL 인증서 시작일</label>
+            <input class="form-input" id="f-ssl" type="date">
+            <span class="form-hint" id="f-ssl-hint"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">호스팅 시작일</label>
+            <input class="form-input" id="f-hosting" type="date">
+            <span class="form-hint" id="f-hosting-hint"></span>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">호스팅 정보</label>
+            <input class="form-input" id="f-hosting-info" type="text" placeholder="호스팅사, 계정 정보 등">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">FTP 정보</label>
+            <input class="form-input" id="f-ftp" type="text" placeholder="FTP 접속 정보">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">도메인 정보</label>
+            <input class="form-input" id="f-domain" type="text" placeholder="도메인 등록기관, 만료일 등">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-ghost" id="f-reset">초기화</button>
+          <button class="btn btn-primary" id="f-save">💾 저장</button>
+        </div>
+      </div>
+
+      <!-- ⑤ 만료 알림 -->
+      <div class="tab-panel" id="tab-alerts">
+        <p class="section-title" style="margin-bottom:12px;">🚨 만료 임박 항목</p>
+        <div class="alert-list" id="alertList"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="complete-float" id="completeFloat"></div>
+
+<!-- SEO Modal -->
+<div class="modal-overlay" id="seoModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="seoModalTitle">🔍 SEO 현황</h3>
+      <button class="modal-close" id="seoModalClose">✕</button>
+    </div>
+    <div class="modal-body" id="seoModalBody">
+      <div class="seo-loading"><div class="spinner"></div>분석 중...</div>
+    </div>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
