@@ -40,14 +40,14 @@ const USE_DUMMY      = false;
 //  더미 데이터 (노션 DB 동일 구조 + 신규 필드)
 // ══════════════════════════════════════════════
 const DUMMY_DATA = [
-  { id:"1",  name:"다인아트치과 리뉴얼",         status:"부류",       start:"2026-02-27", deadline:"2026-03-04", done:"2026-03-12", open:"",           design:"진의영", coding:"김동훈", photo:"",         photoCo:"",      photoDate:"",           url:"",                                    sslStart:"",           hostingStart:"",           hostingInfo:"cafe24",                  ftp:"ftp.dain.com / id: dain / pw: dain123",        domain:"dain.co.kr / 2027-02-27" },
-  { id:"2",  name:"진심을다하는치과",            status:"종료",       start:"2026-02-19", deadline:"2026-03-06", done:"2026-03-11", open:"2026-03-23",  design:"진의영", coding:"김동훈", photo:"사진",     photoCo:"박중원", photoDate:"",           url:"jinsimdental22.mycafe24.com/",        sslStart:"",           hostingStart:"2025-04-20", hostingInfo:"cafe24 / 진심스마트",          ftp:"jinsimd / jinsimd22!",                         domain:"jinsimdental.co.kr" },
-  { id:"3",  name:"서울다온치과2",               status:"종료",       start:"2026-02-09", deadline:"2026-02-27", done:"2026-03-09", open:"2026-03-16",  design:"진의영", coding:"김동훈", photo:"사진+영상",photoCo:"박중원", photoDate:"2026-03-13", url:"seouldaon2.mycafe24.com/",            sslStart:"2025-05-10", hostingStart:"2025-05-10", hostingInfo:"cafe24",                  ftp:"seouldaon2 / daon!@2",                         domain:"seouldaon.com / 2027-01-10" },
-  { id:"4",  name:"기존 타입 디벨롭",            status:"부류",       start:"2026-02-02", deadline:"",          done:"",           open:"",            design:"진의영", coding:"김동훈", photo:"",         photoCo:"",      photoDate:"",           url:"",                                    sslStart:"",           hostingStart:"",           hostingInfo:"",                        ftp:"",                                             domain:"" },
+  { id:"1",  name:"다인아트치과 리뉴얼",         status:"부류",       start:"2026-02-27", deadline:"2026-03-04", done:"2026-03-12", open:"",           design:"진의령", coding:"김동훈", photo:"",         photoCo:"",      photoDate:"",           url:"",                                    sslStart:"",           hostingStart:"",           hostingInfo:"cafe24",                  ftp:"ftp.dain.com / id: dain / pw: dain123",        domain:"dain.co.kr / 2027-02-27" },
+  { id:"2",  name:"진심을다하는치과",            status:"종료",       start:"2026-02-19", deadline:"2026-03-06", done:"2026-03-11", open:"2026-03-23",  design:"진의령", coding:"김동훈", photo:"사진",     photoCo:"박중원", photoDate:"",           url:"jinsimdental22.mycafe24.com/",        sslStart:"",           hostingStart:"2025-04-20", hostingInfo:"cafe24 / 진심스마트",          ftp:"jinsimd / jinsimd22!",                         domain:"jinsimdental.co.kr" },
+  { id:"3",  name:"서울다온치과2",               status:"종료",       start:"2026-02-09", deadline:"2026-02-27", done:"2026-03-09", open:"2026-03-16",  design:"진의령", coding:"김동훈", photo:"사진+영상",photoCo:"박중원", photoDate:"2026-03-13", url:"seouldaon2.mycafe24.com/",            sslStart:"2025-05-10", hostingStart:"2025-05-10", hostingInfo:"cafe24",                  ftp:"seouldaon2 / daon!@2",                         domain:"seouldaon.com / 2027-01-10" },
+  { id:"4",  name:"기존 타입 디벨롭",            status:"부류",       start:"2026-02-02", deadline:"",          done:"",           open:"",            design:"진의령", coding:"김동훈", photo:"",         photoCo:"",      photoDate:"",           url:"",                                    sslStart:"",           hostingStart:"",           hostingInfo:"",                        ftp:"",                                             domain:"" },
   { id:"5",  name:"금천연세세브란스치과 리뉴얼", status:"완료",       start:"2026-02-01", deadline:"",          done:"2026-02-28", open:"",            design:"외주",   coding:"외주",   photo:"사진",     photoCo:"박상준", photoDate:"2026-02-03", url:"",                                    sslStart:"",           hostingStart:"",           hostingInfo:"",                        ftp:"",                                             domain:"" },
   { id:"6",  name:"잠담치과 리뉴얼",             status:"완료",       start:"2026-01-29", deadline:"",          done:"2026-02-10", open:"",            design:"외주",   coding:"외주",   photo:"사진",     photoCo:"박상준", photoDate:"",           url:"",                                    sslStart:"",           hostingStart:"",           hostingInfo:"",                        ftp:"",                                             domain:"" },
   { id:"7",  name:"나란이덕치과 리뉴얼",         status:"전체피드백", start:"2026-01-01", deadline:"2026-01-21",done:"2026-02-07", open:"",            design:"",       coding:"외주",   photo:"",         photoCo:"",      photoDate:"",           url:"naranlee.mycafe24.com/",              sslStart:"",           hostingStart:"",           hostingInfo:"cafe24",                  ftp:"naranlee / lee!@1",                            domain:"naranlee.com" },
-  { id:"8",  name:"진심스마트치과",              status:"디자인중",   start:"",           deadline:"",          done:"",           open:"",            design:"진의영", coding:"김동훈", photo:"",         photoCo:"",      photoDate:"",           url:"jinsimsmart.co.kr",                   sslStart:"",           hostingStart:"2025-12-01", hostingInfo:"cafe24 / jinsimd",        ftp:"jinsimd / smart!2",                            domain:"jinsimsmart.co.kr / 2027-05-01" },
+  { id:"8",  name:"진심스마트치과",              status:"디자인중",   start:"",           deadline:"",          done:"",           open:"",            design:"진의령", coding:"김동훈", photo:"",         photoCo:"",      photoDate:"",           url:"jinsimsmart.co.kr",                   sslStart:"",           hostingStart:"2025-12-01", hostingInfo:"cafe24 / jinsimd",        ftp:"jinsimd / smart!2",                            domain:"jinsimsmart.co.kr / 2027-05-01" },
   { id:"9",  name:"메디앤메디스케줄",            status:"종료",       start:"",           deadline:"",          done:"",           open:"",            design:"",       coding:"김동훈", photo:"",         photoCo:"",      photoDate:"",           url:"medischedule.co.kr/",                 sslStart:"2026-03-24", hostingStart:"2026-03-24", hostingInfo:"가비아",                  ftp:"medischedule / medi!@",                        domain:"medischedule.co.kr / 2027-03-24" },
   { id:"10", name:"케이플란트치과",              status:"종료",       start:"",           deadline:"",          done:"",           open:"",            design:"",       coding:"김동훈", photo:"",         photoCo:"",      photoDate:"",           url:"kplant2.mycafe24.com/",               sslStart:"",           hostingStart:"",           hostingInfo:"cafe24",                  ftp:"kplant2 / kplan!2",                            domain:"kplantdental.com" },
   { id:"11", name:"스토리플랜",                  status:"",           start:"",           deadline:"",          done:"",           open:"",            design:"",       coding:"",       photo:"",         photoCo:"",      photoDate:"",           url:"storypl",                             sslStart:"",           hostingStart:"",           hostingInfo:"",                        ftp:"",                                             domain:"" },
@@ -60,7 +60,7 @@ const DUMMY_DATA = [
   { id:"18", name:"산본중심치과",                status:"대기중",     start:"",           deadline:"2026-04-13",done:"",           open:"",            design:"",       coding:"",       photo:"",         photoCo:"",      photoDate:"",           url:"",                                    sslStart:"",           hostingStart:"",           hostingInfo:"",                        ftp:"",                                             domain:"" },
   { id:"19", name:"당신의치과",                  status:"코딩중",     start:"",           deadline:"2026-04-03",done:"",           open:"",            design:"",       coding:"",       photo:"",         photoCo:"",      photoDate:"",           url:"forudental2.mycafe24.com/index2.php", sslStart:"",          hostingStart:"",           hostingInfo:"cafe24",                  ftp:"forudental2 / foru!@2",                        domain:"forudental.com / 2026-09-01" },
   { id:"20", name:"스토리플랜 카페24",            status:"완료",       start:"",           deadline:"",          done:"",           open:"",            design:"",       coding:"",       photo:"",         photoCo:"",      photoDate:"",           url:"storyplan / !@tmxhff9218",            sslStart:"",           hostingStart:"",           hostingInfo:"",                        ftp:"",                                             domain:"" },
-  { id:"21", name:"키즈앤패밀리치과 리뉴얼",      status:"대기중",     start:"2026-03-24", deadline:"",          done:"",           open:"",            design:"진의영", coding:"김동훈", photo:"사진+영상",photoCo:"박중원", photoDate:"2026-02-27", url:"kidsandfamily2.mycafe24.com/",        sslStart:"",           hostingStart:"",           hostingInfo:"cafe24 / kidsandfamily",  ftp:"kidsandfamily2 / kids!@2",                     domain:"kidsandfamily.co.kr / 2027-03-24" },
+  { id:"21", name:"키즈앤패밀리치과 리뉴얼",      status:"대기중",     start:"2026-03-24", deadline:"",          done:"",           open:"",            design:"진의령", coding:"김동훈", photo:"사진+영상",photoCo:"박중원", photoDate:"2026-02-27", url:"kidsandfamily2.mycafe24.com/",        sslStart:"",           hostingStart:"",           hostingInfo:"cafe24 / kidsandfamily",  ftp:"kidsandfamily2 / kids!@2",                     domain:"kidsandfamily.co.kr / 2027-03-24" },
   { id:"22", name:"365편한일층치과",              status:"기획중",     start:"2026-03-31", deadline:"2026-04-08",done:"",           open:"",            design:"",       coding:"",       photo:"",         photoCo:"",      photoDate:"",           url:"firstfloor3652.mycafe24.com/index2.php",sslStart:"",         hostingStart:"",           hostingInfo:"",                        ftp:"",                                             domain:"" },
 ];
 
@@ -169,6 +169,7 @@ function parseNotionPage(page) {
     hostingInfo: p["호스팅 정보"]?.rich_text?.[0]?.plain_text ?? "",
     ftp:         p["FTP 정보"]?.rich_text?.[0]?.plain_text ?? "",
     domain:      p["도메인 정보"]?.rich_text?.[0]?.plain_text ?? "",
+    domainExpiry:p["도메인 만기일"]?.date?.start ?? "",
   };
 }
 
@@ -197,6 +198,7 @@ async function saveToNotion(data, pageId = null) {
     "호스팅 정보":      data.hostingInfo ? { rich_text: [{ text: { content: data.hostingInfo } }] } : undefined,
     "FTP 정보":         data.ftp         ? { rich_text: [{ text: { content: data.ftp } }] }         : undefined,
     "도메인 정보":      data.domain      ? { rich_text: [{ text: { content: data.domain } }] }      : undefined,
+    "도메인 만기일":    data.domainExpiry? { date: { start: data.domainExpiry } }                     : undefined,
   };
 
   // undefined 제거
@@ -226,7 +228,7 @@ async function saveToNotion(data, pageId = null) {
 // ══════════════════════════════════════════════
 //  탭 전환
 // ══════════════════════════════════════════════
-const tabTitles = { dashboard:"대시보드", list:"사이트 목록", register:"신규 등록", alerts:"만료 알림", detail:"상세 정보", calendar:"캘린더" };
+const tabTitles = { dashboard:"대시보드", list:"사이트 목록", register:"신규 등록", alerts:"만료 알림", detail:"상세 정보", calendar:"캘린더", tasks:"업무 관리" };
 let prevTab = "dashboard";
 
 function switchTab(tab, updateNav = true) {
@@ -274,7 +276,8 @@ function renderDashboard(data) {
   const expiring = data.filter(d => {
     const hd = daysUntil(add365(d.hostingStart));
     const sd = daysUntil(add365(d.sslStart));
-    return (hd !== null && hd <= 30) || (sd !== null && sd <= 30);
+    const dd = daysUntil(d.domainExpiry);
+    return (hd !== null && hd <= 30) || (sd !== null && sd <= 30) || (dd !== null && dd <= 30);
   });
 
   document.getElementById("stat-total").textContent   = data.length;
@@ -286,16 +289,20 @@ function renderDashboard(data) {
     document.getElementById("alertNavBtn").innerHTML = `🔔<span class="badge"></span>`;
   }
 
-  const showStatuses = ["기획중","디자인중","코딩중","부류","전체피드백","대기중","유지보수"];
+  const showStatuses     = ["기획중","디자인중","코딩중","부류","전체피드백","대기중","유지보수"];
+  const terminalStatuses = ["완료","종료"];
   const groups = {};
-  showStatuses.forEach(s => { groups[s] = data.filter(d => d.status === s); });
+  [...showStatuses, ...terminalStatuses].forEach(s => { groups[s] = data.filter(d => d.status === s); });
 
-  const board = document.getElementById("kanban-board");
+  const board   = document.getElementById("kanban-board");
+  const dropZone = document.getElementById("kanban-dropzone");
+
+  // 메인 칸반 렌더
   board.innerHTML = showStatuses
     .filter(s => groups[s].length > 0)
     .map(s => `
       <div class="kanban-col" data-status="${s}">
-        <div class="kanban-col-title" data-status="${s}">
+        <div class="kanban-col-title">
           <span class="dot" style="background:${STATUS_COLORS[s]||"#555"}"></span>
           ${s} <span style="color:var(--text3);font-weight:400;margin-left:2px">${groups[s].length}</span>
         </div>
@@ -308,52 +315,74 @@ function renderDashboard(data) {
       </div>
     `).join("");
 
-  // 칸반 카드 클릭 → 상세 / 드래그앤드롭
-  board.querySelectorAll(".kanban-item").forEach(el => {
-    el.setAttribute("draggable", "true");
-    el.addEventListener("click", () => {
-      const item = allData.find(d => d.id === el.dataset.id);
-      if (item) openDetail(item);
-    });
-    el.addEventListener("dragstart", e => {
-      e.dataTransfer.setData("itemId", el.dataset.id);
-      el.style.opacity = "0.4";
-    });
-    el.addEventListener("dragend", e => {
-      el.style.opacity = "1";
+  // 완료/종료 드롭존 (항상 DOM에 존재, CSS로 숨김/표시)
+  dropZone.innerHTML = terminalStatuses.map(s => `
+    <div class="kanban-col kanban-col-terminal" data-status="${s}">
+      <div class="kanban-col-title">
+        <span class="dot" style="background:${STATUS_COLORS[s]||"#555"}"></span>
+        ${s}로 이동
+      </div>
+      <div class="kanban-terminal-hint">여기에 드롭하세요</div>
+    </div>
+  `).join("");
+  dropZone.style.display = "none";
+
+  // 드래그 이벤트 - board 전체에 위임
+  board.addEventListener("dragstart", e => {
+    const el = e.target.closest(".kanban-item");
+    if (!el) return;
+    e.dataTransfer.setData("itemId", el.dataset.id);
+    el.style.opacity = "0.4";
+    dropZone.style.display = "grid"; // 드롭존 표시
+  });
+
+  board.addEventListener("dragend", e => {
+    const el = e.target.closest(".kanban-item");
+    if (el) el.style.opacity = "1";
+    dropZone.style.display = "none"; // 드롭존 숨김
+  });
+
+  // 일반 칸반 드롭
+  board.querySelectorAll(".kanban-col").forEach(col => {
+    col.addEventListener("dragover", e => { e.preventDefault(); col.style.background="rgba(79,94,247,.08)"; col.style.borderColor="var(--accent)"; });
+    col.addEventListener("dragleave", () => { col.style.background=""; col.style.borderColor=""; });
+    col.addEventListener("drop", async e => {
+      e.preventDefault();
+      col.style.background=""; col.style.borderColor="";
+      dropZone.style.display = "none";
+      const itemId = e.dataTransfer.getData("itemId");
+      const item   = allData.find(d => d.id === itemId);
+      if (!item || item.status === col.dataset.status) return;
+      item.status = col.dataset.status;
+      if (!USE_DUMMY) await saveToNotion(item, item.id);
+      renderDashboard(allData); renderCards(allData);
+      showToast(`"${item.name}" → ${col.dataset.status}`, "✅");
     });
   });
 
-  board.querySelectorAll(".kanban-col").forEach(col => {
-    col.addEventListener("dragover", e => {
-      e.preventDefault();
-      col.style.background = "rgba(79,94,247,.08)";
-      col.style.borderColor = "var(--accent)";
-    });
-    col.addEventListener("dragleave", () => {
-      col.style.background = "";
-      col.style.borderColor = "";
-    });
+  // 완료/종료 드롭존 이벤트
+  dropZone.querySelectorAll(".kanban-col-terminal").forEach(col => {
+    col.addEventListener("dragover", e => { e.preventDefault(); col.style.background="rgba(107,114,128,.15)"; col.style.borderColor="#6b7280"; });
+    col.addEventListener("dragleave", () => { col.style.background=""; col.style.borderColor=""; });
     col.addEventListener("drop", async e => {
       e.preventDefault();
-      col.style.background = "";
-      col.style.borderColor = "";
-      const itemId  = e.dataTransfer.getData("itemId");
-      const newStatus = col.dataset.status;
-      if (!itemId || !newStatus) return;
+      col.style.background=""; col.style.borderColor="";
+      dropZone.style.display = "none";
+      const itemId = e.dataTransfer.getData("itemId");
+      const item   = allData.find(d => d.id === itemId);
+      if (!item) return;
+      item.status = col.dataset.status;
+      if (!USE_DUMMY) await saveToNotion(item, item.id);
+      renderDashboard(allData); renderCards(allData);
+      showToast(`"${item.name}" → ${col.dataset.status}`, "✅");
+    });
+  });
 
-      const item = allData.find(d => d.id === itemId);
-      if (!item || item.status === newStatus) return;
-
-      item.status = newStatus;
-
-      if (!USE_DUMMY) {
-        await saveToNotion(item, item.id);
-      }
-
-      renderDashboard(allData);
-      renderCards(allData);
-      showToast(`"${item.name}" → ${newStatus}`, "✅");
+  // 칸반 아이템 클릭
+  board.querySelectorAll(".kanban-item").forEach(el => {
+    el.addEventListener("click", () => {
+      const item = allData.find(d => d.id === el.dataset.id);
+      if (item) openDetail(item);
     });
   });
 }
@@ -446,7 +475,7 @@ function renderDetail(d, editMode) {
 
   // ── 바디
   const STATUSES = ["기획중","디자인중","코딩중","대기중","부류","유지보수","전체피드백","완료","종료"];
-  const DESIGNS  = ["","진의영","외주"];
+  const DESIGNS  = ["","진의령","외주"];
   const CODINGS  = ["","김동훈","외주"];
   const PHOTOS   = ["","사진","사진+영상"];
   const PHOTO_COS= ["","박중원","장영진","박상준"];
@@ -563,6 +592,7 @@ function renderDetail(d, editMode) {
         ${field("호스팅 정보", "hostingInfo", "text", null, true)}
         ${field("FTP 정보",    "ftp",         "text", null, true)}
         ${field("도메인 정보", "domain",      "text", null, true)}
+        ${expiryField("도메인 만기", "domainExpiry", true)}
       </div>
     </div>
   `;
@@ -640,8 +670,10 @@ function renderAlerts(data) {
     const sslExpiry     = add365(d.sslStart);
     const hd = daysUntil(hostingExpiry);
     const sd = daysUntil(sslExpiry);
-    if (hd !== null && hd <= 30) alerts.push({ name:d.name, type:"호스팅",     days:hd, date:hostingExpiry, id:d.id });
-    if (sd !== null && sd <= 30) alerts.push({ name:d.name, type:"SSL 인증서", days:sd, date:sslExpiry,     id:d.id });
+    const dd = daysUntil(d.domainExpiry);
+    if (hd !== null && hd <= 30) alerts.push({ name:d.name, type:"호스팅",     days:hd, date:hostingExpiry,  id:d.id });
+    if (sd !== null && sd <= 30) alerts.push({ name:d.name, type:"SSL 인증서", days:sd, date:sslExpiry,      id:d.id });
+    if (dd !== null && dd <= 30) alerts.push({ name:d.name, type:"도메인",     days:dd, date:d.domainExpiry, id:d.id });
   });
 
   const list = document.getElementById("alertList");
@@ -868,10 +900,18 @@ async function toggleTask(id) {
   if (!task) return;
   task.done   = !task.done;
   task.doneAt = task.done ? new Date().toLocaleTimeString("ko-KR", { hour:"2-digit", minute:"2-digit" }) : "";
-  task.doneBy = task.done ? "나" : "";  // 실제 배포 시 사용자명으로 교체
+  task.doneBy = task.done ? "나" : "";
 
   await saveTasks();
   renderTasks();
+
+  // 오늘 업무에서 완료 → 업무탭 항목도 완료 + 병원상태 연동
+  if (task._taskRef) {
+    const ref = taskList.find(t => t.id === task._taskRef);
+    if (ref && ref.done !== task.done) {
+      await toggleTaskItem(ref.id); // 전체 로직 위임 (병원상태 포함)
+    }
+  }
 
   if (task.done) {
     showCompleteFloat(`✅ "${task.text}" 완료!`);
@@ -1394,4 +1434,481 @@ function openDayModal(dateKey, eventMap) {
       if (item) openDetail(item);
     });
   });
+}
+
+// ══════════════════════════════════════════════
+//  업무 관리 (Task Manager)
+//  Firebase: /taskList/ 에 저장
+// ══════════════════════════════════════════════
+const TASK_LIST_KEY = "taskList";
+
+const taskFirebase = {
+  async getAll() {
+    const res = await fetch(`${FIREBASE_URL}/${TASK_LIST_KEY}.json`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!data) return [];
+    return Array.isArray(data) ? data : Object.values(data);
+  },
+  async save(list) {
+    await fetch(`${FIREBASE_URL}/${TASK_LIST_KEY}.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(list)
+    });
+  }
+};
+
+let taskList = []; // 전체 업무 목록
+let taskFilter = "all";
+
+
+// 병원 셀렉트 갱신 (allData 기반)
+function populateHospitalSelect() {
+  const sel = document.getElementById("tf-hospital");
+  if (!sel || allData.length === 0) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">선택 안함</option>';
+  allData
+    .filter(d => d.name)
+    .sort((a, b) => a.name.localeCompare(b.name, "ko"))
+    .forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d.id;
+      opt.textContent = `${d.name}${d.status ? " ("+d.status+")" : ""}`;
+      if (d.id === current) opt.selected = true;
+      sel.appendChild(opt);
+    });
+}
+
+async function loadTaskList() {
+  try {
+    taskList = await taskFirebase.getAll();
+  } catch(e) {
+    taskList = [];
+  }
+  renderTaskList();
+  syncPinnedToToday();
+}
+
+async function saveTaskList() {
+  await taskFirebase.save(taskList);
+}
+
+function renderTaskList() {
+  const list = document.getElementById("taskItemList");
+  if (!list) return;
+
+  // 병원 셀렉트 항상 최신 데이터로 갱신
+  populateHospitalSelect();
+
+  let filtered = taskList;
+  if (taskFilter === "active") filtered = taskList.filter(t => !t.done);
+  if (taskFilter === "done")   filtered = taskList.filter(t => t.done);
+
+  // 핀 → 상단, 나머지 만기일 순
+  filtered.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
+    if (a.dueDate) return -1;
+    if (b.dueDate) return 1;
+    return 0;
+  });
+
+  // 만기 1개월 초과 완료 항목 자동삭제
+  const oneMonthAgo = (() => {
+    const d = new Date(); d.setMonth(d.getMonth() - 1);
+    return d.toISOString().slice(0,10);
+  })();
+  const before = taskList.length;
+  taskList = taskList.filter(t => {
+    if (!t.done) return true;
+    if (!t.dueDate) return true;
+    return t.dueDate >= oneMonthAgo; // 만기일이 1개월 이내면 유지
+  });
+  if (taskList.length !== before) saveTaskList();
+
+  // 진행중 / 완료 분리
+  const activeTasks = filtered.filter(t => !t.done);
+  const doneTasks   = filtered.filter(t => t.done);
+
+  if (activeTasks.length === 0 && doneTasks.length === 0) {
+    list.innerHTML = `<div class="task-empty">업무가 없습니다. ＋ 버튼으로 추가하세요.</div>`;
+    return;
+  }
+
+  const today = todayStr();
+  const renderCard = t => {
+    const daysLeft = t.dueDate ? daysUntil(t.dueDate) : null;
+    const dueCls   = daysLeft !== null
+      ? (daysLeft <= 0 ? "task-due-danger" : daysLeft <= 7 ? "task-due-warn" : "")
+      : "";
+    const autoMark = t.autoDue ? ` <span class="task-auto-badge">자동</span>` : "";
+    const dueLabel = t.dueDate
+      ? `<span class="task-due ${dueCls}">${t.dueDate}${daysLeft !== null ? ` (D${daysLeft <= 0 ? daysLeft : "-"+daysLeft})` : ""}${autoMark}</span>`
+      : "";
+    const pinIcon  = t.pinned
+      ? `<span class="task-pin-badge" title="오늘 업무에 고정">📌</span>` : "";
+    const hospital = t.hospitalName
+      ? `<span class="task-hospital">${t.hospitalName}</span>` : "";
+
+    const card = `
+      <div class="task-manage-item ${t.done ? "done" : ""}" data-id="${t.id}">
+        <div class="task-check ${t.done ? "checked" : ""}" data-id="${t.id}">
+          ${t.done ? "✓" : ""}
+        </div>
+        <div class="task-manage-body">
+          <div class="task-manage-title">
+            ${pinIcon}
+            <span>${t.title}</span>
+            ${t.pinned && t.dueDate ? `<span class="task-pin-until">~${t.dueDate}까지</span>` : ""}
+          </div>
+          <div class="task-manage-meta">
+            ${hospital}
+            ${dueLabel}
+          </div>
+          ${t.memo ? `<div class="task-manage-memo">${t.memo}</div>` : ""}
+          <div class="task-manage-btns">
+            <button class="task-action-btn task-edit-btn" data-id="${t.id}">✏️ 수정</button>
+            <button class="task-action-btn task-delete-btn" data-id="${t.id}">🗑️ 삭제</button>
+          </div>
+        </div>
+        <button class="task-pin-btn ${t.pinned ? "pinned" : ""}" data-id="${t.id}" title="${t.pinned ? "고정 해제" : "고정"}">📌</button>
+      </div>
+    `;
+    return card;
+  };
+
+  // 진행중 카드
+  const activeHtml = activeTasks.length > 0
+    ? activeTasks.map(renderCard).join("")
+    : `<div class="task-empty" style="padding:12px">진행중인 업무가 없습니다.</div>`;
+
+  // 완료 아코디언
+  const doneHtml = doneTasks.length > 0
+    ? `<div class="task-done-accordion" id="taskDoneAccordion">
+        <button class="task-done-toggle" id="taskDoneToggle">
+          <span>✅ 완료된 업무 <span class="task-done-count">${doneTasks.length}개</span></span>
+          <span class="task-done-chevron">▾</span>
+        </button>
+        <div class="task-done-list" id="taskDoneList" style="display:none">
+          ${doneTasks.map(renderCard).join("")}
+        </div>
+      </div>`
+    : "";
+
+  list.innerHTML = activeHtml + doneHtml;
+
+  // 아코디언 토글
+  const toggleBtn = document.getElementById("taskDoneToggle");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      const doneList = document.getElementById("taskDoneList");
+      const chevron  = toggleBtn.querySelector(".task-done-chevron");
+      const isOpen   = doneList.style.display !== "none";
+      doneList.style.display = isOpen ? "none" : "flex";
+      chevron.textContent    = isOpen ? "▾" : "▴";
+    });
+  }
+
+  // 이벤트
+  list.querySelectorAll(".task-check[data-id]").forEach(el => {
+    el.addEventListener("click", () => toggleTaskItem(el.dataset.id));
+  });
+  list.querySelectorAll(".task-pin-btn[data-id]").forEach(el => {
+    el.addEventListener("click", e => { e.stopPropagation(); pinTaskItem(el.dataset.id); });
+  });
+  list.querySelectorAll(".task-delete-btn[data-id]").forEach(el => {
+    el.addEventListener("click", e => { e.stopPropagation(); deleteTaskItem(el.dataset.id); });
+  });
+  list.querySelectorAll(".task-edit-btn[data-id]").forEach(el => {
+    el.addEventListener("click", e => { e.stopPropagation(); openEditTaskForm(el.dataset.id); });
+  });
+}
+
+async function addTaskItem() {
+  const title = document.getElementById("tf-title")?.value.trim();
+  if (!title) { showToast("업무 제목을 입력해주세요", "⚠️"); return; }
+
+  const sel = document.getElementById("tf-hospital");
+  const hospitalId   = sel?.value || "";
+  const hospital     = hospitalId ? allData.find(d => d.id === hospitalId) : null;
+  const hospitalName = hospital?.name || "";
+
+  console.log("[업무추가] hospitalId:", hospitalId);
+  console.log("[업무추가] hospital:", hospital?.name, "/ 상태:", hospital?.status);
+
+  // 만기날짜 없으면 1주일 뒤 자동 설정
+  const rawDue = document.getElementById("tf-due")?.value || "";
+  let autoDue = false;
+  let finalDue = rawDue;
+  if (!rawDue) {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    finalDue = d.toISOString().slice(0, 10);
+    autoDue = true;
+  }
+
+  const item = {
+    id:           String(Date.now()),
+    title,
+    dueDate:      finalDue,
+    autoDue,
+    memo:         document.getElementById("tf-memo")?.value.trim() || "",
+    hospitalId,
+    hospitalName,
+    pinned:       document.getElementById("tf-pin")?.checked || false,
+    done:         false,
+    createdAt:    todayStr()
+  };
+
+  // 업무 추가 시 완료/종료 병원 → 유지보수로 자동 변경
+  if (hospital) {
+    const terminalStatuses = ["완료", "종료"];
+    if (terminalStatuses.includes(hospital.status)) {
+      console.log("[업무추가] 유지보수로 변경:", hospital.name);
+      hospital.status = "유지보수";
+      if (!USE_DUMMY) {
+        const ok = await saveToNotion(hospital, hospital.id);
+        console.log("[업무추가] 노션 저장 결과:", ok);
+      }
+      renderDashboard(allData);
+      renderCards(allData);
+      renderCalendar();
+      showToast(`${hospital.name} → 유지보수로 이동 🔄`);
+    }
+  }
+
+  taskList.unshift(item);
+  await saveTaskList();
+  syncPinnedToToday();
+  renderTaskList();
+  closeTaskForm();
+  showToast(`"${title}" 업무 추가됨`, "✅");
+}
+
+async function toggleTaskItem(id) {
+  const t = taskList.find(x => x.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  t.doneAt = t.done ? todayStr() : "";
+
+  if (t.hospitalId) {
+    const hospital = allData.find(d => d.id === t.hospitalId);
+    if (hospital) {
+      if (t.done) {
+        // 업무 완료 → 병원 상태 종료로 복귀
+        if (hospital.status === "유지보수") {
+          hospital.status = "종료";
+          if (!USE_DUMMY) await saveToNotion(hospital, hospital.id);
+          renderDashboard(allData);
+          renderCards(allData);
+          showToast(`${hospital.name} → 종료로 이동`, "✅");
+        }
+      } else {
+        // 완료 취소 → 병원 상태 다시 유지보수
+        if (hospital.status === "종료") {
+          hospital.status = "유지보수";
+          if (!USE_DUMMY) await saveToNotion(hospital, hospital.id);
+          renderDashboard(allData);
+          renderCards(allData);
+          showToast(`${hospital.name} → 유지보수로 이동`, "🔄");
+        }
+      }
+    }
+  }
+
+  await saveTaskList();
+  syncPinnedToToday();
+  renderTaskList();
+}
+
+async function pinTaskItem(id) {
+  const t = taskList.find(x => x.id === id);
+  if (!t) return;
+  t.pinned = !t.pinned;
+  await saveTaskList();
+  syncPinnedToToday();
+  renderTaskList();
+  showToast(t.pinned ? "오늘 업무에 고정됨 📌" : "고정 해제됨", t.pinned ? "📌" : "✅");
+}
+
+async function deleteTaskItem(id) {
+  const t = taskList.find(x => x.id === id);
+  if (!t) return;
+  if (!confirm(`"${t.title}" 업무를 삭제할까요?`)) return;
+  taskList = taskList.filter(x => x.id !== id);
+  await saveTaskList();
+  syncPinnedToToday();
+  renderTaskList();
+}
+
+// 핀 고정 + 만기 임박 → 오늘 업무에 자동 추가
+function syncPinnedToToday() {
+  const today = todayStr();
+  const autoIds = new Set(todayTasks.filter(t => t._taskRef).map(t => t._taskRef));
+
+  taskList.forEach(t => {
+    if (t.done) return;
+    const daysLeft = t.dueDate ? daysUntil(t.dueDate) : null;
+    const shouldAdd = t.pinned || (daysLeft !== null && daysLeft <= 3);
+    if (!shouldAdd) return;
+    if (autoIds.has(t.id)) return; // 이미 있음
+
+    todayTasks.push({
+      id:      "auto_" + t.id + "_" + Date.now(),
+      text:    t.pinned
+        ? `📌 ${t.title}${t.dueDate ? " (~"+t.dueDate+"까지)" : ""}`
+        : `⏰ ${t.title}${t.dueDate ? " (D"+(-daysLeft||0)+")" : ""}`,
+      done:    false,
+      doneAt:  "",
+      doneBy:  "",
+      _taskRef: t.id,
+      pinned:  t.pinned
+    });
+    autoIds.add(t.id);
+  });
+
+  // 핀/자동 항목 정렬: 핀 먼저
+  todayTasks.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return 0;
+  });
+
+  saveTasks();
+  renderTasks();
+}
+
+// 업무 폼 열기/닫기
+function closeTaskForm() {
+  const wrap = document.getElementById("taskFormWrap");
+  if (wrap) wrap.style.display = "none";
+  ["tf-title","tf-due","tf-memo"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  const pin = document.getElementById("tf-pin");
+  if (pin) pin.checked = false;
+  const sel = document.getElementById("tf-hospital");
+  if (sel) sel.selectedIndex = 0;
+}
+
+// 탭 전환 시 taskList 로드
+document.querySelector('[data-tab="tasks"]')?.addEventListener("click", () => {
+  loadTaskList();
+});
+
+// 폼 이벤트
+document.addEventListener("DOMContentLoaded", () => {
+  const btnOpen = document.getElementById("btnOpenTaskForm");
+  const wrap    = document.getElementById("taskFormWrap");
+  if (btnOpen && wrap) {
+    btnOpen.addEventListener("click", () => {
+      wrap.style.display = wrap.style.display === "none" ? "block" : "none";
+      if (wrap.style.display === "block") populateHospitalSelect();
+    });
+  }
+
+  document.getElementById("tf-cancel")?.addEventListener("click", closeTaskForm);
+  document.getElementById("tf-save")?.addEventListener("click", async () => {
+    if (editingTaskId) {
+      await updateTaskItem(editingTaskId);
+    } else {
+      await addTaskItem();
+    }
+  });
+
+  // 필터 버튼
+  document.querySelectorAll(".task-filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      taskFilter = btn.dataset.filter;
+      document.querySelectorAll(".task-filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderTaskList();
+    });
+  });
+});
+
+// ── 업무 수정 폼
+let editingTaskId = null;
+
+function openEditTaskForm(id) {
+  const t = taskList.find(x => x.id === id);
+  if (!t) return;
+  editingTaskId = id;
+
+  // 기존 폼 재활용
+  const wrap = document.getElementById("taskFormWrap");
+  if (!wrap) return;
+  wrap.style.display = "block";
+  populateHospitalSelect();
+
+  document.getElementById("tf-title").value     = t.title || "";
+  document.getElementById("tf-due").value       = t.dueDate || "";
+  document.getElementById("tf-memo").value      = t.memo || "";
+  document.getElementById("tf-pin").checked     = t.pinned || false;
+
+  const sel = document.getElementById("tf-hospital");
+  if (sel) sel.value = t.hospitalId || "";
+
+  // 저장 버튼 텍스트 변경
+  const saveBtn = document.getElementById("tf-save");
+  if (saveBtn) saveBtn.textContent = "💾 수정 저장";
+
+  // 취소 시 editingTaskId 초기화
+  document.getElementById("tf-cancel").onclick = () => {
+    editingTaskId = null;
+    if (saveBtn) saveBtn.textContent = "💾 저장";
+    closeTaskForm();
+  };
+}
+
+// tf-save 클릭 → 수정 모드이면 updateTaskItem 호출
+const _origTfSave = document.getElementById("tf-save");
+if (_origTfSave) {
+  _origTfSave.addEventListener("click", async () => {
+    if (editingTaskId) {
+      await updateTaskItem(editingTaskId);
+    }
+    // addTaskItem은 기존 이벤트가 처리 (editingTaskId 없을 때)
+  });
+}
+
+async function updateTaskItem(id) {
+  const t = taskList.find(x => x.id === id);
+  if (!t) return;
+
+  const rawDue = document.getElementById("tf-due")?.value || "";
+  let finalDue = rawDue;
+  let autoDue  = false;
+  if (!rawDue) {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    finalDue = d.toISOString().slice(0, 10);
+    autoDue  = true;
+  }
+
+  const newHospitalId   = document.getElementById("tf-hospital")?.value || "";
+  const newHospitalName = newHospitalId
+    ? (allData.find(d => d.id === newHospitalId)?.name || "") : "";
+
+  t.title        = document.getElementById("tf-title")?.value.trim() || t.title;
+  t.dueDate      = finalDue;
+  t.autoDue      = autoDue;
+  t.memo         = document.getElementById("tf-memo")?.value.trim() || "";
+  t.pinned       = document.getElementById("tf-pin")?.checked || false;
+  t.hospitalId   = newHospitalId;
+  t.hospitalName = newHospitalName;
+
+  await saveTaskList();
+  syncPinnedToToday();
+  renderTaskList();
+
+  editingTaskId = null;
+  const saveBtn = document.getElementById("tf-save");
+  if (saveBtn) saveBtn.textContent = "💾 저장";
+  closeTaskForm();
+  showToast("업무 수정 완료!", "✅");
 }

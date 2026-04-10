@@ -14,6 +14,7 @@
     <button class="nav-btn" data-tab="list" title="사이트 목록">📋</button>
     <button class="nav-btn" data-tab="register" title="신규 등록">➕</button>
     <button class="nav-btn" data-tab="calendar" title="캘린더">📅</button>
+    <button class="nav-btn" data-tab="tasks" title="업무 관리">📝</button>
     <button class="nav-btn" data-tab="alerts" title="만료 알림" id="alertNavBtn">🔔</button>
   </nav>
 
@@ -64,6 +65,7 @@
 
         <p class="section-title">상태별 현황</p>
         <div class="kanban" id="kanban-board"></div>
+        <div class="kanban-dropzone" id="kanban-dropzone"></div>
       </div>
 
       <!-- ② 목록 (카드 뷰) -->
@@ -219,6 +221,56 @@
           <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
         </div>
         <div class="cal-grid" id="calGrid"></div>
+      </div>
+
+
+      <!-- 업무 탭 -->
+      <div class="tab-panel" id="tab-tasks">
+        <div class="tasks-toolbar">
+          <span class="section-title" style="margin:0">업무 목록</span>
+          <button class="btn-add-task" id="btnOpenTaskForm" title="업무 추가">＋</button>
+        </div>
+
+        <!-- 업무 추가 폼 -->
+        <div class="task-form-wrap" id="taskFormWrap" style="display:none">
+          <div class="task-form">
+            <div class="form-group full">
+              <label class="form-label">업무 제목 *</label>
+              <input class="form-input" id="tf-title" type="text" placeholder="업무 제목을 입력하세요">
+            </div>
+            <div class="form-group">
+              <label class="form-label">만기 날짜</label>
+              <input class="form-input" id="tf-due" type="date">
+            </div>
+            <div class="form-group">
+              <label class="form-label">관련 병원</label>
+              <select class="form-select" id="tf-hospital">
+                <option value="">선택 안함</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">메모</label>
+              <textarea class="form-input" id="tf-memo" rows="2" placeholder="간단한 메모..." style="resize:vertical"></textarea>
+            </div>
+            <div class="form-group" style="display:flex;align-items:center;gap:6px; flex-direction: row;">
+              <input type="checkbox" id="tf-pin" style="width:14px;height:14px;cursor:pointer">
+              <label class="form-label" for="tf-pin" style="cursor:pointer">📌 오늘 업무에 고정</label>
+            </div>
+          </div>
+          <div class="form-actions" style="margin-top:10px">
+            <button class="btn btn-ghost" id="tf-cancel">취소</button>
+            <button class="btn btn-primary" id="tf-save">💾 저장</button>
+          </div>
+        </div>
+
+        <!-- 필터 -->
+        <div class="task-filter-row">
+          <button class="task-filter-btn active" data-filter="all">전체</button>
+          <button class="task-filter-btn" data-filter="active">진행중</button>
+          <button class="task-filter-btn" data-filter="done">완료</button>
+        </div>
+
+        <div class="task-item-list" id="taskItemList"></div>
       </div>
 
       <!-- ⑥ 만료 알림 -->

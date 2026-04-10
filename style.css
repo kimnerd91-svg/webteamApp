@@ -973,3 +973,263 @@ body {
 .kanban-item[draggable="true"] { cursor: grab; }
 .kanban-item[draggable="true"]:active { cursor: grabbing; }
 .kanban-col { transition: background .15s, border-color .15s; }
+
+/* ══════════════════════════════════════════
+   업무 탭 스타일
+══════════════════════════════════════════ */
+.tasks-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.task-form-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.task-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.task-form .form-group.full { grid-column: 1 / -1; }
+
+.task-filter-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.task-filter-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all .15s;
+}
+.task-filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.task-filter-btn:hover:not(.active) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.task-item-list { display: flex; flex-direction: column; gap: 6px; }
+
+.task-manage-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  transition: border-color .15s;
+}
+.task-manage-item:hover { border-color: var(--accent); }
+.task-manage-item.done { opacity: .6; }
+.task-manage-item.done .task-manage-title span { text-decoration: line-through; color: var(--text3); }
+
+.task-manage-body { flex: 1; min-width: 0; }
+.task-manage-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.task-pin-badge { font-size: 11px; flex-shrink: 0; }
+.task-pin-until {
+  font-size: 10px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.task-manage-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+.task-hospital {
+  font-size: 10px;
+  color: var(--accent);
+  font-weight: 600;
+  background: rgba(79,94,247,.1);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+.task-due {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 500;
+}
+.task-due.task-due-warn   { color: var(--warning); font-weight: 700; }
+.task-due.task-due-danger { color: var(--danger);  font-weight: 700; }
+.task-manage-memo {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 3px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.task-manage-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.task-pin-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px;
+  opacity: .3;
+  transition: opacity .15s;
+}
+.task-pin-btn.pinned { opacity: 1; }
+.task-pin-btn:hover  { opacity: 1; }
+
+.task-auto-badge {
+  font-size: 9px;
+  font-weight: 700;
+  background: rgba(245,158,11,.15);
+  color: var(--warning);
+  border-radius: 10px;
+  padding: 1px 5px;
+  margin-left: 3px;
+  vertical-align: middle;
+}
+.task-edit-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px;
+  opacity: .4;
+  transition: opacity .15s;
+}
+.task-edit-btn:hover { opacity: 1; }
+
+/* 드래그 시 나타나는 완료/종료 드롭존 */
+.kanban-dropzone {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+.kanban-col-terminal {
+  border: 2px dashed #9ca3af !important;
+  background: rgba(107,114,128,.04) !important;
+  border-radius: 10px;
+  padding: 8px;
+  animation: fadeInCol .18s ease forwards;
+  transition: background .15s, border-color .15s;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.kanban-col-terminal .kanban-col-title {
+  color: var(--text3);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.kanban-terminal-hint {
+  font-size: 10px;
+  color: var(--text3);
+}
+@keyframes fadeInCol {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 업무 카드 하단 버튼 */
+.task-manage-btns {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.task-action-btn {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 4px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  color: var(--text2);
+  transition: all .15s;
+}
+.task-action-btn:hover { background: var(--border); color: var(--text); }
+.task-delete-btn:hover { background: rgba(239,68,68,.1); color: var(--danger); border-color: rgba(239,68,68,.3); }
+
+/* 완료 업무 아코디언 */
+.task-done-accordion {
+  margin-top: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.task-done-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text2);
+  transition: background .15s;
+}
+.task-done-toggle:hover { background: var(--border); }
+.task-done-count {
+  font-size: 11px;
+  background: rgba(16,185,129,.12);
+  color: var(--success);
+  border-radius: 20px;
+  padding: 1px 7px;
+  margin-left: 4px;
+}
+.task-done-chevron {
+  font-size: 12px;
+  color: var(--text3);
+  transition: transform .2s;
+}
+.task-done-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: var(--surface);
+}
