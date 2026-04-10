@@ -286,6 +286,8 @@ function switchTab(tab, updateNav = true) {
 document.querySelectorAll(".nav-btn[data-tab]").forEach(btn => {
   btn.addEventListener("click", () => switchTab(btn.dataset.tab));
 });
+// 상단 알림 버튼
+document.getElementById("alertNavBtn")?.addEventListener("click", () => switchTab("alerts"));
 
 document.getElementById("backBtn").addEventListener("click", () => {
   switchTab(prevTab);
@@ -309,9 +311,36 @@ function renderDashboard(data) {
   document.getElementById("stat-active").textContent  = active.length;
   document.getElementById("stat-waiting").textContent = waiting.length;
   document.getElementById("stat-expiry").textContent  = expiring.length;
+  // 만료임박 카드 클릭 → alerts 탭
+  document.querySelector(".stat-card.red")?.addEventListener("click", () => switchTab("alerts"));
+  document.querySelector(".stat-card.red").style.cursor = "pointer";
 
+  // 알림 배지 & 배너
+  const alertBtn = document.getElementById("alertNavBtn");
+  const alertCount = document.getElementById("alertTopbarCount");
   if (expiring.length > 0) {
-    document.getElementById("alertNavBtn").innerHTML = `🔔<span class="badge"></span>`;
+    if (alertCount) { alertCount.textContent = expiring.length; alertCount.style.display = "inline"; }
+  } else {
+    if (alertCount) alertCount.style.display = "none";
+  }
+
+  // 만료임박 배너 (stat-row 위)
+  const banner = document.getElementById("expiryBanner");
+  if (banner) {
+    if (expiring.length > 0) {
+      const items = expiring.slice(0, 3).map(d => {
+        const hd = daysUntil(add365(d.hostingStart));
+        const sd = daysUntil(add365(d.sslStart));
+        const dd = daysUntil(d.domainExpiry);
+        const days = [hd,sd,dd].filter(x=>x!==null&&x<=30).sort((a,b)=>a-b)[0];
+        return `<span class="expiry-banner-item ${days<=7?"danger":"warn"}">${d.name} D-${days}</span>`;
+      }).join("");
+      banner.innerHTML = `<div class="expiry-banner">🔔 만료임박 ${expiring.length}건 ${items} <button class="expiry-banner-link" id="bannerLink">전체보기 →</button></div>`;
+      banner.style.display = "block";
+      document.getElementById("bannerLink")?.addEventListener("click", () => switchTab("alerts"));
+    } else {
+      banner.style.display = "none";
+    }
   }
 
   const showStatuses     = ["기획중","디자인중","코딩중","부류","전체피드백","대기중","유지보수"];
@@ -909,9 +938,11 @@ function renderTasks() {
 
 async function addTask(text) {
   if (!text.trim()) return;
+  // 맨 앞에 ・ 자동 추가
+  const finalText = text.trim().startsWith("・") ? text.trim() : `・ ${text.trim()}`;
   todayTasks.push({
     id:     String(Date.now()),
-    text:   text.trim(),
+    text:   finalText,
     done:   false,
     doneAt: "",
     doneBy: ""
