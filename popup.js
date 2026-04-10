@@ -222,7 +222,32 @@ async function saveToNotion(data, pageId = null) {
     },
     body: JSON.stringify(body)
   });
-  return res.ok;
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    console.error("[노션 저장 실패]", res.status, err.message || "", err);
+    // 도메인 만기일 필드 제거 후 재시도
+    if (body.properties && body.properties["도메인 만기일"]) {
+      delete body.properties["도메인 만기일"];
+      const retry = await fetch(url, {
+        method,
+        headers: {
+          "Authorization":  `Bearer ${NOTION_API_KEY}`,
+          "Notion-Version": NOTION_VERSION,
+          "Content-Type":   "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+      if (retry.ok) {
+        console.warn("[노션] 도메인 만기일 컬럼이 없어 해당 필드 제외 후 저장 성공");
+        return true;
+      }
+      const err2 = await retry.json().catch(() => ({}));
+      console.error("[노션 재시도 실패]", err2.message || "", err2);
+      return false;
+    }
+    return false;
+  }
+  return true;
 }
 
 // ══════════════════════════════════════════════
