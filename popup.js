@@ -169,7 +169,7 @@ function parseNotionPage(page) {
     hostingInfo: p["호스팅 정보"]?.rich_text?.[0]?.plain_text ?? "",
     ftp:         p["FTP 정보"]?.rich_text?.[0]?.plain_text ?? "",
     domain:      p["도메인 정보"]?.rich_text?.[0]?.plain_text ?? "",
-    domainExpiry:p["도메인 만기일"]?.date?.start ?? "",
+    domainStart: p["도메인 만기일"]?.date?.start ?? "",
   };
 }
 
@@ -198,7 +198,7 @@ async function saveToNotion(data, pageId = null) {
     "호스팅 정보":      data.hostingInfo ? { rich_text: [{ text: { content: data.hostingInfo } }] } : undefined,
     "FTP 정보":         data.ftp         ? { rich_text: [{ text: { content: data.ftp } }] }         : undefined,
     "도메인 정보":      data.domain      ? { rich_text: [{ text: { content: data.domain } }] }      : undefined,
-    "도메인 만기일":    data.domainExpiry? { date: { start: data.domainExpiry } }                     : undefined,
+    "도메인 만기일":    data.domainStart ? { date: { start: data.domainStart } }                      : undefined,
   };
 
   // undefined 제거
@@ -227,7 +227,7 @@ async function saveToNotion(data, pageId = null) {
     console.error("[노션 저장 실패]", res.status, err.message || "", err);
     // 도메인 만기일 필드 제거 후 재시도
     if (body.properties && body.properties["도메인 만기일"]) {
-      delete body.properties["도메인 만기일"];
+      if (body.properties["도메인 만기일"]) delete body.properties["도메인 만기일"];
       const retry = await fetch(url, {
         method,
         headers: {
@@ -303,7 +303,7 @@ function renderDashboard(data) {
   const expiring = data.filter(d => {
     const hd = daysUntil(add365(d.hostingStart));
     const sd = daysUntil(add365(d.sslStart));
-    const dd = daysUntil(d.domainExpiry);
+    const dd = daysUntil(add365(d.domainStart));
     return (hd !== null && hd <= 30) || (sd !== null && sd <= 30) || (dd !== null && dd <= 30);
   });
 
@@ -331,7 +331,7 @@ function renderDashboard(data) {
       const items = expiring.slice(0, 3).map(d => {
         const hd = daysUntil(add365(d.hostingStart));
         const sd = daysUntil(add365(d.sslStart));
-        const dd = daysUntil(d.domainExpiry);
+        const dd = daysUntil(add365(d.domainStart));
         const days = [hd,sd,dd].filter(x=>x!==null&&x<=30).sort((a,b)=>a-b)[0];
         return `<span class="expiry-banner-item ${days<=7?"danger":"warn"}">${d.name} D-${days}</span>`;
       }).join("");
@@ -572,7 +572,7 @@ function renderDetail(d, editMode) {
     const cls = fullWidth ? "detail-field full" : "detail-field";
     if (editMode) {
       return `<div class="${cls}">
-        <div class="detail-field-label">${label} 시작일</div>
+        <div class="detail-field-label">${label}</div>
         <input class="edit-input" type="date" data-key="${startKey}" value="${startVal}">
         <div class="detail-field-label" style="margin-top:4px">↳ 만료일 (자동)</div>
         <div class="detail-field-value" style="font-size:11px;color:var(--accent)">${expiryVal || "-"}</div>
@@ -646,7 +646,7 @@ function renderDetail(d, editMode) {
         ${field("호스팅 정보", "hostingInfo", "text", null, true)}
         ${field("FTP 정보",    "ftp",         "text", null, true)}
         ${field("도메인 정보", "domain",      "text", null, true)}
-        ${expiryField("도메인 만기", "domainExpiry", true)}
+        ${expiryField("도메인", "domainStart", true)}
       </div>
     </div>
   `;
@@ -724,10 +724,10 @@ function renderAlerts(data) {
     const sslExpiry     = add365(d.sslStart);
     const hd = daysUntil(hostingExpiry);
     const sd = daysUntil(sslExpiry);
-    const dd = daysUntil(d.domainExpiry);
+    const dd = daysUntil(add365(d.domainStart));
     if (hd !== null && hd <= 30) alerts.push({ name:d.name, type:"호스팅",     days:hd, date:hostingExpiry,  id:d.id });
     if (sd !== null && sd <= 30) alerts.push({ name:d.name, type:"SSL 인증서", days:sd, date:sslExpiry,      id:d.id });
-    if (dd !== null && dd <= 30) alerts.push({ name:d.name, type:"도메인",     days:dd, date:d.domainExpiry, id:d.id });
+    if (dd !== null && dd <= 30) alerts.push({ name:d.name, type:"도메인",     days:dd, date:add365(d.domainStart), id:d.id });
   });
 
   const list = document.getElementById("alertList");
@@ -775,13 +775,15 @@ document.getElementById("statusFilter").addEventListener("change", applyFilter);
 // ══════════════════════════════════════════════
 //  신규 등록
 // ══════════════════════════════════════════════
-const FORM_TEXT_IDS   = ["f-name","f-start","f-deadline","f-done","f-open","f-url","f-ssl","f-hosting","f-photo-date","f-hosting-info","f-ftp","f-domain"];
+const FORM_TEXT_IDS   = ["f-name","f-start","f-deadline","f-done","f-open","f-url","f-ssl","f-hosting","f-photo-date","f-hosting-info","f-ftp","f-domain","f-domain-expiry"];
 const FORM_SELECT_IDS = ["f-status","f-design","f-coding","f-photo","f-photo-co"];
 
 // 시작일 → 만료일 힌트 자동 표시
-["f-ssl","f-hosting"].forEach(id => {
+["f-ssl","f-hosting","f-domain-expiry"].forEach(id => {
   const hintId = id + "-hint";
-  document.getElementById(id).addEventListener("change", e => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener("change", e => {
     const expiry = add365(e.target.value);
     const hint = document.getElementById(hintId);
     if (hint) hint.textContent = expiry ? `만료일 자동계산: ${expiry}` : "";
@@ -816,6 +818,7 @@ document.getElementById("f-save").addEventListener("click", async () => {
     hostingInfo: document.getElementById("f-hosting-info").value,
     ftp:         document.getElementById("f-ftp").value,
     domain:      document.getElementById("f-domain").value,
+    domainStart:document.getElementById("f-domain-expiry")?.value || "",
   };
 
   if (!USE_DUMMY) {
