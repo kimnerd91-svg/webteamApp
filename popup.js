@@ -180,32 +180,39 @@ function parseNotionPage(page) {
 async function saveToNotion(data, pageId = null) {
   if (USE_DUMMY) return true;
 
+  // URL 정규화 (노션은 완전한 URL 또는 null만 허용)
+  let cleanUrl = null;
+  if (data.url && data.url.trim()) {
+    let u = data.url.trim().replace(/\/$/, ""); // 끝 슬래시 제거
+    if (!u.startsWith("http://") && !u.startsWith("https://")) u = "https://" + u;
+    cleanUrl = u;
+  }
+
   const props = {
-    "병원명":           { title: [{ text: { content: data.name } }] },
-    "상태":             data.status      ? { select: { name: data.status } }                        : undefined,
-    "시작일":           data.start       ? { date: { start: data.start } }                          : undefined,
-    "1차 마감일":       data.deadline    ? { date: { start: data.deadline } }                       : undefined,
-    "완료일":           data.done        ? { date: { start: data.done } }                           : undefined,
-    "개원날짜":         data.open        ? { date: { start: data.open } }                           : undefined,
-    "디자인":           data.design      ? { select: { name: data.design } }                        : undefined,
-    "코딩":             data.coding      ? { select: { name: data.coding } }                        : undefined,
-    "촬영":             data.photo       ? { select: { name: data.photo } }                         : undefined,
-    "촬영업체":         data.photoCo     ? { multi_select: [{ name: data.photoCo }] }               : undefined,
-    "촬영날짜":         data.photoDate   ? { date: { start: data.photoDate } }                      : undefined,
-    "웹사이트 URL":     data.url         ? { url: data.url }                                        : undefined,
-    "보안인증서 만료일자": data.sslStart  ? { date: { start: data.sslStart } }                      : undefined,
-    "호스팅 만료일자":  data.hostingStart? { date: { start: data.hostingStart } }                   : undefined,
-    "호스팅 정보":      data.hostingInfo ? { rich_text: [{ text: { content: data.hostingInfo } }] } : undefined,
-    "FTP 정보":         data.ftp         ? { rich_text: [{ text: { content: data.ftp } }] }         : undefined,
-    "도메인 정보":      data.domain      ? { rich_text: [{ text: { content: data.domain } }] }      : undefined,
-    "도메인 만기일":    data.domainStart ? { date: { start: data.domainStart } }                      : undefined,
+    "병원명":              { title: [{ text: { content: data.name || "" } }] },
+    "상태":                data.status      ? { select: { name: data.status } }                        : undefined,
+    "시작일":              data.start       ? { date: { start: data.start } }                          : undefined,
+    "1차 마감일":          data.deadline    ? { date: { start: data.deadline } }                       : undefined,
+    "완료일":              data.done        ? { date: { start: data.done } }                           : undefined,
+    "개원날짜":            data.open        ? { date: { start: data.open } }                           : undefined,
+    "디자인":              data.design      ? { select: { name: data.design } }                        : undefined,
+    "코딩":                data.coding      ? { select: { name: data.coding } }                        : undefined,
+    "촬영":                data.photo       ? { select: { name: data.photo } }                         : undefined,
+    "촬영업체":            data.photoCo     ? { multi_select: [{ name: data.photoCo }] }               : undefined,
+    "촬영날짜":            data.photoDate   ? { date: { start: data.photoDate } }                      : undefined,
+    "웹사이트 URL":        { url: cleanUrl }, // null이면 노션에서 URL 삭제
+    "보안인증서 만료일자": data.sslStart    ? { date: { start: data.sslStart } }                      : undefined,
+    "호스팅 만료일자":     data.hostingStart? { date: { start: data.hostingStart } }                   : undefined,
+    "호스팅 정보":         data.hostingInfo ? { rich_text: [{ text: { content: data.hostingInfo } }] } : undefined,
+    "FTP 정보":            data.ftp         ? { rich_text: [{ text: { content: data.ftp } }] }         : undefined,
+    "도메인 정보":         data.domain      ? { rich_text: [{ text: { content: data.domain } }] }      : undefined,
+    "도메인 만기일":       data.domainStart ? { date: { start: data.domainStart } }                    : undefined,
   };
 
   // undefined 제거
-  Object.keys(props).forEach(k => { if (!props[k]) delete props[k]; });
+  Object.keys(props).forEach(k => { if (props[k] === undefined) delete props[k]; });
 
-  // 수정 (PATCH) vs 신규 (POST)
-  const url    = pageId
+  const apiUrl = pageId
     ? `https://api.notion.com/v1/pages/${pageId}`
     : "https://api.notion.com/v1/pages";
   const method = pageId ? "PATCH" : "POST";
@@ -213,41 +220,41 @@ async function saveToNotion(data, pageId = null) {
     ? { properties: props }
     : { parent: { database_id: DATABASE_ID }, properties: props };
 
-  const res = await fetch(url, {
-    method,
-    headers: {
-      "Authorization":  `Bearer ${NOTION_API_KEY}`,
-      "Notion-Version": NOTION_VERSION,
-      "Content-Type":   "application/json"
-    },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    console.error("[노션 저장 실패]", res.status, err.message || "", err);
-    // 도메인 만기일 필드 제거 후 재시도
-    if (body.properties && body.properties["도메인 만기일"]) {
-      if (body.properties["도메인 만기일"]) delete body.properties["도메인 만기일"];
-      const retry = await fetch(url, {
-        method,
-        headers: {
-          "Authorization":  `Bearer ${NOTION_API_KEY}`,
-          "Notion-Version": NOTION_VERSION,
-          "Content-Type":   "application/json"
-        },
-        body: JSON.stringify(body)
-      });
-      if (retry.ok) {
-        console.warn("[노션] 도메인 만기일 컬럼이 없어 해당 필드 제외 후 저장 성공");
+  const headers = {
+    "Authorization":  `Bearer ${NOTION_API_KEY}`,
+    "Notion-Version": NOTION_VERSION,
+    "Content-Type":   "application/json"
+  };
+
+  // 저장 시도 함수
+  const tryFetch = async (b) => {
+    const r = await fetch(apiUrl, { method, headers, body: JSON.stringify(b) });
+    if (r.ok) return true;
+    const e = await r.json().catch(() => ({}));
+    console.error("[노션 저장 실패]", r.status, e.message || "", e);
+    return { status: r.status, msg: e.message || "", code: e.code || "" };
+  };
+
+  // 1차 시도
+  const r1 = await tryFetch(body);
+  if (r1 === true) return true;
+
+  // 실패 시 문제 필드 순차 제거 후 재시도
+  const fallbackFields = ["도메인 만기일", "웹사이트 URL", "촬영업체", "디자인", "코딩", "촬영"];
+  for (const field of fallbackFields) {
+    if (body.properties[field]) {
+      console.warn(`[노션] "${field}" 필드 제거 후 재시도`);
+      delete body.properties[field];
+      const r2 = await tryFetch(body);
+      if (r2 === true) {
+        console.warn(`[노션] "${field}" 제외 후 저장 성공`);
         return true;
       }
-      const err2 = await retry.json().catch(() => ({}));
-      console.error("[노션 재시도 실패]", err2.message || "", err2);
-      return false;
     }
-    return false;
   }
-  return true;
+
+  console.error("[노션] 모든 재시도 실패");
+  return false;
 }
 
 // ══════════════════════════════════════════════
@@ -527,6 +534,34 @@ function renderDetail(d, editMode) {
     </div>
   `;
 
+  // ── 헤더 이벤트 바인딩 (innerHTML 설정 직후)
+  if (editMode) {
+    document.getElementById("detailSaveBtn")?.addEventListener("click", () => saveDetail(d));
+    document.getElementById("detailCancelBtn")?.addEventListener("click", () => {
+      isEditMode = false; renderDetail(d, false);
+    });
+  } else {
+    document.getElementById("detailSeoBtn")?.addEventListener("click", () => openSeoModal(d));
+    document.getElementById("detailEditBtn")?.addEventListener("click", () => {
+      isEditMode = true; renderDetail(d, true);
+    });
+    document.getElementById("detailDeleteBtn")?.addEventListener("click", async () => {
+      if (!confirm(`"${d.name}"을 정말 삭제할까요?\n\n이 작업은 노션 DB에서도 삭제됩니다.`)) return;
+      if (!USE_DUMMY) {
+        const res = await fetch(`https://api.notion.com/v1/pages/${d.id}`, {
+          method: "PATCH",
+          headers: { "Authorization": `Bearer ${NOTION_API_KEY}`, "Notion-Version": NOTION_VERSION, "Content-Type": "application/json" },
+          body: JSON.stringify({ archived: true })
+        });
+        if (!res.ok) { showToast("노션 삭제 실패", "❌"); return; }
+      }
+      allData = allData.filter(x => x.id !== d.id);
+      renderDashboard(allData); renderCards(allData); renderAlerts(allData); renderCalendar();
+      showToast(`"${d.name}" 삭제됨`, "🗑️");
+      switchTab(prevTab);
+    });
+  }
+
   // ── 바디
   const STATUSES = ["기획중","디자인중","코딩중","대기중","부류","유지보수","전체피드백","완료","종료"];
   const DESIGNS  = ["","진의령","외주"];
@@ -651,51 +686,17 @@ function renderDetail(d, editMode) {
     </div>
   `;
 
-  // ── 이벤트 바인딩
-  if (editMode) {
-    document.getElementById("detailSaveBtn").addEventListener("click", () => saveDetail(d));
-    document.getElementById("detailCancelBtn").addEventListener("click", () => {
-      isEditMode = false;
-      renderDetail(d, false);
-    });
-  } else {
-    document.getElementById("detailSeoBtn").addEventListener("click", () => openSeoModal(d));
-    document.getElementById("detailEditBtn").addEventListener("click", () => {
-      isEditMode = true;
-      renderDetail(d, true);
-    });
-    document.getElementById("detailDeleteBtn").addEventListener("click", async () => {
-      if (!confirm(`"${d.name}"을 정말 삭제할까요?\n\n이 작업은 노션 DB에서도 삭제됩니다.`)) return;
-
-      // 노션에서 삭제 (archived 처리)
-      if (!USE_DUMMY) {
-        const res = await fetch(`https://api.notion.com/v1/pages/${d.id}`, {
-          method: "PATCH",
-          headers: {
-            "Authorization": `Bearer ${NOTION_API_KEY}`,
-            "Notion-Version": NOTION_VERSION,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ archived: true })
-        });
-        if (!res.ok) { showToast("노션 삭제 실패", "❌"); return; }
-      }
-
-      allData = allData.filter(x => x.id !== d.id);
-      renderDashboard(allData);
-      renderCards(allData);
-      renderAlerts(allData);
-      renderCalendar();
-      showToast(`"${d.name}" 삭제됨`, "🗑️");
-      switchTab(prevTab);
-    });
-  }
 }
 
 async function saveDetail(original) {
   const inputs = document.querySelectorAll("#detailBody .edit-input, #detailBody .edit-select, #detailHeader .edit-select");
   const updated = { ...original };
   inputs.forEach(el => { updated[el.dataset.key] = el.value; });
+
+  console.log("[saveDetail] id:", original.id);
+  console.log("[saveDetail] status:", updated.status);
+  console.log("[saveDetail] url:", updated.url);
+  console.log("[saveDetail] updated keys:", Object.keys(updated));
 
   if (!USE_DUMMY) {
     const ok = await saveToNotion(updated, original.id);
