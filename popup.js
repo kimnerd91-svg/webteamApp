@@ -521,14 +521,7 @@ function renderDetail(d, editMode) {
     </div>
     <div class="detail-title">
       <h2 title="${d.name}">${d.name}</h2>
-      ${editMode
-        ? `<select class="edit-select" data-key="status" style="font-size:11px;padding:3px 6px;border-radius:6px">
-            ${["기획중","디자인중","코딩중","대기중","부류","유지보수","전체피드백","완료","종료"].map(s=>
-              `<option value="${s}" ${s===d.status?"selected":""}>${s}</option>`
-            ).join("")}
-           </select>`
-        : `<span class="${statusClass(d.status)}">${d.status || "미분류"}</span>`
-      }
+      <span class="${statusClass(d.status)}">${d.status || "미분류"}</span>
     </div>
   `;
 
@@ -1202,7 +1195,7 @@ async function openSeoModal(d) {
   body.innerHTML = `<div class="seo-loading"><div class="spinner"></div>분석 중...</div>`;
   overlay.classList.add("open");
 
-  const baseUrl = normalizeUrl(d.url);
+  const baseUrl = normalizeUrl(d.url || d.workurl);
   const keys    = await loadNaverKeys(d.id);
 
   if (!baseUrl) {
