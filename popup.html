@@ -92,7 +92,10 @@
 
       <!-- ③ 상세/수정 패널 (카드 클릭 시) -->
       <div class="tab-panel" id="tab-detail">
-        <div class="detail-header" id="detailHeader"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)">
+          <div class="detail-header" id="detailHeader" style="flex:1;display:flex;align-items:center;gap:12px"></div>
+          <div id="detailActionsStatic" style="display:flex;gap:6px;flex-shrink:0;align-items:center"></div>
+        </div>
         <div class="detail-body" id="detailBody"></div>
       </div>
 
@@ -171,7 +174,11 @@
             <input class="form-input" id="f-photo-date" type="date">
           </div>
           <div class="form-group full">
-            <label class="form-label">웹사이트 URL</label>
+            <label class="form-label">작업용 URL</label>
+            <input class="form-input" id="f-workurl" type="text" placeholder="예: cafe24 임시 작업주소">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">본웹사이트 URL</label>
             <input class="form-input" id="f-url" type="text" placeholder="예: jinsimdental22.mycafe24.com/">
           </div>
           <div class="form-group">

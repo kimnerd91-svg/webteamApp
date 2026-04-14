@@ -163,7 +163,8 @@ function parseNotionPage(page) {
     photo:       p["촬영"]?.select?.name ?? p["촬영"]?.multi_select?.[0]?.name ?? "",
     photoCo:     p["촬영업체"]?.multi_select?.[0]?.name ?? p["촬영업체"]?.people?.[0]?.name ?? p["촬영업체"]?.select?.name ?? "",
     photoDate:   p["촬영날짜"]?.date?.start ?? "",
-    url:         p["웹사이트 URL"]?.url ?? p["웹사이트 URL"]?.rich_text?.[0]?.plain_text ?? "",
+    workurl:     p["작업용 URL"]?.url ?? p["작업용 URL"]?.rich_text?.[0]?.plain_text ?? "",
+    url:         p["본웹사이트 URL"]?.url ?? p["본웹사이트 URL"]?.rich_text?.[0]?.plain_text ?? "",
     sslStart:    p["보안인증서 만료일자"]?.date?.start ?? "",
     hostingStart:p["호스팅 만료일자"]?.date?.start ?? "",
     hostingInfo: p["호스팅 정보"]?.rich_text?.[0]?.plain_text ?? "",
@@ -200,7 +201,13 @@ async function saveToNotion(data, pageId = null) {
     "촬영":                data.photo       ? { select: { name: data.photo } }                         : undefined,
     "촬영업체":            data.photoCo     ? { multi_select: [{ name: data.photoCo }] }               : undefined,
     "촬영날짜":            data.photoDate   ? { date: { start: data.photoDate } }                      : undefined,
-    "웹사이트 URL":        { url: cleanUrl }, // null이면 노션에서 URL 삭제
+    "작업용 URL":          (() => {
+      if (!data.workurl) return { url: null };
+      let w = data.workurl.trim().replace(/\/$/, "");
+      if (w && !w.startsWith("http://") && !w.startsWith("https://")) w = "https://" + w;
+      return { url: w || null };
+    })(),
+    "본웹사이트 URL":      { url: cleanUrl },
     "보안인증서 만료일자": data.sslStart    ? { date: { start: data.sslStart } }                      : undefined,
     "호스팅 만료일자":     data.hostingStart? { date: { start: data.hostingStart } }                   : undefined,
     "호스팅 정보":         data.hostingInfo ? { rich_text: [{ text: { content: data.hostingInfo } }] } : undefined,
@@ -240,7 +247,7 @@ async function saveToNotion(data, pageId = null) {
   if (r1 === true) return true;
 
   // 실패 시 문제 필드 순차 제거 후 재시도
-  const fallbackFields = ["도메인 만기일", "웹사이트 URL", "촬영업체", "디자인", "코딩", "촬영"];
+  const fallbackFields = ["도메인 만기일", "본웹사이트 URL", "작업용 URL", "촬영업체", "디자인", "코딩", "촬영"];
   for (const field of fallbackFields) {
     if (body.properties[field]) {
       console.warn(`[노션] "${field}" 필드 제거 후 재시도`);
@@ -507,7 +514,7 @@ function renderDetail(d, editMode) {
   const color     = avatarBg(d.status);
   const firstChar = d.name.charAt(0);
 
-  // ── 헤더
+  // 아바타 + 이름 + 상태 (innerHTML 사용)
   document.getElementById("detailHeader").innerHTML = `
     <div class="detail-avatar" style="background:${color}22;border:1.5px solid ${color}55">
       <span style="color:${color}">${firstChar}</span>
@@ -523,34 +530,49 @@ function renderDetail(d, editMode) {
         : `<span class="${statusClass(d.status)}">${d.status || "미분류"}</span>`
       }
     </div>
-    <div class="detail-actions">
-      ${editMode
-        ? `<button class="btn btn-primary btn-sm" id="detailSaveBtn">💾 저장</button>
-           <button class="btn btn-ghost btn-sm" id="detailCancelBtn">취소</button>`
-        : `<button class="btn-seo" id="detailSeoBtn">🔍 SEO</button>
-           <button class="btn btn-ghost btn-sm" id="detailEditBtn">✏️ 수정</button>
-           <button class="btn btn-danger btn-sm" id="detailDeleteBtn">🗑️</button>`
-      }
-    </div>
   `;
 
-  // ── 헤더 이벤트 바인딩 (innerHTML 설정 직후)
+  // 버튼 영역 - createElement로 직접 생성 (CSP 우회)
+  const actions = document.getElementById("detailActionsStatic");
+  actions.innerHTML = "";
+
   if (editMode) {
-    document.getElementById("detailSaveBtn")?.addEventListener("click", () => saveDetail(d));
-    document.getElementById("detailCancelBtn")?.addEventListener("click", () => {
-      isEditMode = false; renderDetail(d, false);
-    });
+    const saveBtn = document.createElement("button");
+    saveBtn.className = "btn btn-primary btn-sm";
+    saveBtn.textContent = "💾 저장";
+    saveBtn.addEventListener("click", () => saveDetail(d));
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.className = "btn btn-ghost btn-sm";
+    cancelBtn.textContent = "취소";
+    cancelBtn.addEventListener("click", () => { isEditMode = false; renderDetail(d, false); });
+
+    actions.appendChild(saveBtn);
+    actions.appendChild(cancelBtn);
   } else {
-    document.getElementById("detailSeoBtn")?.addEventListener("click", () => openSeoModal(d));
-    document.getElementById("detailEditBtn")?.addEventListener("click", () => {
-      isEditMode = true; renderDetail(d, true);
-    });
-    document.getElementById("detailDeleteBtn")?.addEventListener("click", async () => {
-      if (!confirm(`"${d.name}"을 정말 삭제할까요?\n\n이 작업은 노션 DB에서도 삭제됩니다.`)) return;
+    const seoBtn = document.createElement("button");
+    seoBtn.className = "btn-seo";
+    seoBtn.textContent = "🔍 SEO";
+    seoBtn.addEventListener("click", () => openSeoModal(d));
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "btn btn-ghost btn-sm";
+    editBtn.textContent = "✏️ 수정";
+    editBtn.addEventListener("click", () => { isEditMode = true; renderDetail(d, true); });
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "btn btn-danger btn-sm";
+    delBtn.textContent = "🗑️";
+    delBtn.addEventListener("click", async () => {
+      if (!confirm(`"${d.name}"을 정말 삭제할까요?\n\n노션 DB에서도 삭제됩니다.`)) return;
       if (!USE_DUMMY) {
         const res = await fetch(`https://api.notion.com/v1/pages/${d.id}`, {
           method: "PATCH",
-          headers: { "Authorization": `Bearer ${NOTION_API_KEY}`, "Notion-Version": NOTION_VERSION, "Content-Type": "application/json" },
+          headers: {
+            "Authorization": `Bearer ${NOTION_API_KEY}`,
+            "Notion-Version": NOTION_VERSION,
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({ archived: true })
         });
         if (!res.ok) { showToast("노션 삭제 실패", "❌"); return; }
@@ -560,6 +582,10 @@ function renderDetail(d, editMode) {
       showToast(`"${d.name}" 삭제됨`, "🗑️");
       switchTab(prevTab);
     });
+
+    actions.appendChild(seoBtn);
+    actions.appendChild(editBtn);
+    actions.appendChild(delBtn);
   }
 
   // ── 바디
@@ -586,9 +612,8 @@ function renderDetail(d, editMode) {
         <input class="edit-input" type="${type}" data-key="${key}" value="${v}" placeholder="${label}">
       </div>`;
     }
-    // view mode
     let display;
-    if (key === "url" && v) {
+    if ((key === "url" || key === "workurl") && v) {
       const href = v.startsWith("http") ? v : `https://${v}`;
       display = `<a href="${href}" target="_blank">${v}</a>`;
     } else {
@@ -600,14 +625,13 @@ function renderDetail(d, editMode) {
     </div>`;
   }
 
-  // SSL/호스팅 전용: 시작일 + 자동 만료일
   function expiryField(label, startKey, fullWidth = false) {
     const startVal  = d[startKey] || "";
     const expiryVal = add365(startVal);
     const cls = fullWidth ? "detail-field full" : "detail-field";
     if (editMode) {
       return `<div class="${cls}">
-        <div class="detail-field-label">${label}</div>
+        <div class="detail-field-label">${label} 시작일</div>
         <input class="edit-input" type="date" data-key="${startKey}" value="${startVal}">
         <div class="detail-field-label" style="margin-top:4px">↳ 만료일 (자동)</div>
         <div class="detail-field-value" style="font-size:11px;color:var(--accent)">${expiryVal || "-"}</div>
@@ -623,70 +647,60 @@ function renderDetail(d, editMode) {
   }
 
   document.getElementById("detailBody").innerHTML = `
-    <!-- 상태 -->
     <div class="detail-section">
       <div class="detail-section-title">🏷️ 상태</div>
       <div class="detail-fields">
         ${editMode
           ? field("상태", "status", "text", STATUSES, true)
-          : `<div class="detail-field full">
-               <div class="detail-field-label">상태</div>
-               <div class="detail-field-value">
-                 <span class="${statusClass(d.status)}">${d.status || "미분류"}</span>
-               </div>
-             </div>`
-        }
+          : `<div class="detail-field full"><div class="detail-field-label">상태</div>
+             <div class="detail-field-value"><span class="${statusClass(d.status)}">${d.status || "미분류"}</span></div></div>`}
       </div>
     </div>
-    <!-- 일정 -->
     <div class="detail-section">
       <div class="detail-section-title">📅 일정</div>
       <div class="detail-fields">
-        ${field("시작일",    "start",    "date")}
-        ${field("1차 마감일","deadline", "date")}
-        ${field("완료일",    "done",     "date")}
-        ${field("개원날짜",  "open",     "date")}
+        ${field("시작일","start","date")}
+        ${field("1차 마감일","deadline","date")}
+        ${field("완료일","done","date")}
+        ${field("개원날짜","open","date")}
       </div>
     </div>
-    <!-- 담당 -->
     <div class="detail-section">
       <div class="detail-section-title">👤 담당</div>
       <div class="detail-fields">
-        ${field("디자인", "design",  "text", DESIGNS)}
-        ${field("코딩",   "coding",  "text", CODINGS)}
+        ${field("디자인","design","text",DESIGNS)}
+        ${field("코딩","coding","text",CODINGS)}
       </div>
     </div>
-    <!-- 촬영 -->
     <div class="detail-section">
       <div class="detail-section-title">📷 촬영</div>
       <div class="detail-fields">
-        ${field("촬영",     "photo",     "text", PHOTOS)}
-        ${field("촬영업체", "photoCo",   "text", PHOTO_COS)}
-        ${field("촬영날짜", "photoDate", "date")}
+        ${field("촬영","photo","text",PHOTOS)}
+        ${field("촬영업체","photoCo","text",PHOTO_COS)}
+        ${field("촬영날짜","photoDate","date")}
       </div>
     </div>
-    <!-- 웹사이트 -->
     <div class="detail-section">
       <div class="detail-section-title">🌐 웹사이트</div>
       <div class="detail-fields">
-        ${field("URL", "url", "text", null, true)}
-        ${expiryField("SSL 인증서", "sslStart")}
-        ${expiryField("호스팅",     "hostingStart")}
+        ${field("작업용 URL","workurl","text",null,true)}
+        ${field("본웹사이트 URL","url","text",null,true)}
+        ${expiryField("SSL 인증서","sslStart")}
+        ${expiryField("호스팅","hostingStart")}
       </div>
     </div>
-    <!-- 서버 정보 -->
     <div class="detail-section">
       <div class="detail-section-title">🖥️ 서버 정보</div>
       <div class="detail-fields">
-        ${field("호스팅 정보", "hostingInfo", "text", null, true)}
-        ${field("FTP 정보",    "ftp",         "text", null, true)}
-        ${field("도메인 정보", "domain",      "text", null, true)}
-        ${expiryField("도메인", "domainStart", true)}
+        ${field("호스팅 정보","hostingInfo","text",null,true)}
+        ${field("FTP 정보","ftp","text",null,true)}
+        ${field("도메인 정보","domain","text",null,true)}
+        ${expiryField("도메인","domainStart",true)}
       </div>
     </div>
   `;
-
 }
+
 
 async function saveDetail(original) {
   const inputs = document.querySelectorAll("#detailBody .edit-input, #detailBody .edit-select, #detailHeader .edit-select");
@@ -813,6 +827,7 @@ document.getElementById("f-save").addEventListener("click", async () => {
     photo:       document.getElementById("f-photo").value,
     photoCo:     document.getElementById("f-photo-co").value,
     photoDate:   document.getElementById("f-photo-date").value,
+    workurl:     document.getElementById("f-workurl")?.value || "",
     url:         document.getElementById("f-url").value,
     sslStart:    document.getElementById("f-ssl").value,
     hostingStart:document.getElementById("f-hosting").value,
