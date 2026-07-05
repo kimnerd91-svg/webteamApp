@@ -2881,6 +2881,9 @@ ul {
 
 /* sm: 992px */
 @media (max-width: 992px) {
+  .u-fluid-xl-sm {
+    width: 100vw;
+  }
 }
 
 /* md: 993px~1440px */
